@@ -10,6 +10,10 @@ function socketWebClient(server, app) {
     };
     function init() {
 
+        if (server === '') {
+            return;
+        }
+
         if (socket !== null) {
             socket.close();
         }
