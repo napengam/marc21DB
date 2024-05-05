@@ -10,12 +10,14 @@ More details can be found here: [Ongoing update of metadata](https://www.dnb.de/
 
 This documentation provides instructions for installing and using the marc21DB data  
 loader, including setting up the database, configuring the PHP files, and running  
-the script to load MARC21 data files.
+the script to load MARC21 data files.  
+
 ## **DEMO**
 
 A fully working demo is located here:
 
 [https://vmd55223.contaboserver.net/marc21DB/](https://vmd55223.contaboserver.net/marc21DB/)
+
 
 
 ## Dependencies
@@ -55,6 +57,9 @@ This will create a database
 
 In the directory **marc21DB/include** edit the file **connect.inc.php** in order to set
 the neccessary _dbname_ , _user_ and _password_ for your database.   
+
+File **adressPort.inc.php** keeps adress of a websocket server to allow the backend to send feedback to the client  
+If you are not using my [phpWebsocketServer](https://github.com/napengam/phpWebSocketServer) do not set **$Address** in there, 
 
 ### Step 3
 
