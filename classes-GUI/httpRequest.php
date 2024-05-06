@@ -8,6 +8,11 @@ trait httpRequest {
     public $param;
 
     function readRequest() {
+
+        if (!isset($_SERVER['REQUEST_METHOD']) || strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
+            exit;
+        }
+
         $json = file_get_contents('php://input');
         if ($json == '') {
             exit;
