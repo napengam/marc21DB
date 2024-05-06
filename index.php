@@ -4,6 +4,17 @@ require 'include/connect.inc.php';
 require 'include/core.inc.php';
 require 'include/adressPort.inc.php';
 
+// Generate a CSRF token
+$csfr = bin2hex(random_bytes(32));
+
+// Store the token in the session
+session_name('marc21DB');
+session_start();
+foreach ($_SESSION AS $k => $v) {
+    unset($_SESSION[$k]);
+}
+$_SESSION['csfr'] = $csfr;
+
 $pg = new page();
 
 $pg->docTypeEtal('DNB Neuerscheinungen',
@@ -28,6 +39,7 @@ $pg->closeContainer();
 echo
 "<script>
 var server='$Address';
+var csfr='$csfr';    
 </script>";
 ?>
 <script src="js/toolTip.js"></script>
