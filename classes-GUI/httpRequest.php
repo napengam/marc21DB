@@ -13,7 +13,7 @@ trait httpRequest {
 
         $this->param = (object) [];
 
-        if (!isset($_SERVER['REQUEST_METHOD']) || strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
+        if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->param->error = 'Security Violation !!';
             echo $this->closeRequest($this->param);
             exit;
