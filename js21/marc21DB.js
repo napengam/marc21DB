@@ -14,6 +14,10 @@ function marc21DBF() {
         // sets selector in header
         // ******************************************
         backend.fetchHTML('selectfile', 'classes-GUI/showDNBFiles.php', {}, (resPkg) => {
+            if (resPkg.error != '') {
+                dialogs.myInform(resPkg.error);
+                return;
+            }
             document.getElementById("selector").selectedIndex = 1; // fake select of first option
             let t = {dataset: ''}; // fake it
             showTitles(t);
@@ -101,6 +105,13 @@ function marc21DBF() {
         backend.callDirect('classes-GUI/showTitles.php',
                 {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor},
                 (resPkg) => {
+
+            if (resPkg.error != '') {
+                dialogs.myInform(resPkg.error);
+                return;
+            }
+
+
             let obj = document.getElementById('titles');
             if (obj) {
                 obj.innerHTML = resPkg.result;
@@ -141,6 +152,11 @@ function marc21DBF() {
     function showDDC() {
 
         backend.callDirect('classes-GUI/showDDC.php', {'id': sourceid, 'uuid': uuid}, (resPkg) => {
+            if (resPkg.error != '') {
+                dialogs.myInform(resPkg.error);
+                return;
+            }
+
             let obj = document.getElementById('ddc');
             if (obj) {
                 obj.innerHTML = '';
