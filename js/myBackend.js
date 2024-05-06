@@ -50,6 +50,9 @@ function myBackend(v)
         if (respondAction === '') {
             respondAction = dummy;
         }
+        if (typeof csfr !== 'undefined') {
+            sendPkg.csfr = csfr;
+        }
         queue.push({
             'backEnd': backEnd,
             'sendPkg': JSON.stringify(sendPkg),
