@@ -47,9 +47,36 @@ class page {
                           <span id='dnbfile' ></span>
                     </div>
                 </div>
-                <nav class='level'>
+                <nav class='level' style='margin-bottom:8px'>
                 <div class='level-left'>                   
                     <div id='filter' class='level-item'>
+                    </div>
+                </div>
+                </nav>
+                
+                <nav id='searchnav' class='level'>                            
+                <div class='level-right'>
+                    <div class='level-item'>
+                        <p> Suche in Titel
+                    </div>
+                     <div class='level-item'>
+                     <input id='title'  type=text size=20 maxlength=40 placeholder='muster*'>
+                    </div>
+                </div>
+                <div class='level-right'>
+                    <div class='level-item'>
+                        <p> Autor
+                    </div>
+                     <div class='level-item'>
+                     <input id='autor'  type=text size=20 maxlength=40 placeholder='muster*'>
+                    </div>
+                </div>
+                <div class='level-right'>
+                    <div class='level-item'>
+                        <p> Verlag
+                    </div>
+                     <div class='level-item'>
+                     <input id='verlag'  type=text size=20 maxlength=40 placeholder='muster*'>
                     </div>
                 </div>
                  <div class='level-right'>
