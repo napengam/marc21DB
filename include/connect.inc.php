@@ -1,9 +1,9 @@
 <?php
 
-$dbHost = ""; //Hostname des Servers
-$dbUser = ""; //Benutzername
-$dbPass = ""; //Passwort
-$dbName = ""; //Name der Datenbank
+$dbHost = "localhost"; //Hostname des Servers
+$dbUser = "root"; //Benutzername
+$dbPass = "hgs123"; //Passwort
+$dbName = "marc21"; //Name der Datenbank
 $dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8";
 $opt = array(
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

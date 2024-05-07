@@ -13,10 +13,7 @@
   $Address = 'ws://your.server.net[:port]';
   $Address = 'tcp://your.server.net[:port]';
 
-
-  if you do not use websocket do not set $Address
-
  * 
  *  */
 
-$Address = '';
+$Address = 'ws://localhost:8093';
