@@ -17,7 +17,7 @@ class m21HooksDB {
          * add ddc to title
          * **********************************************
          */
-        $ddc = substr($tags->ddc082(), 0, 3);
+        $ddc = $tags->ddc();
         echo "$id / $ddc \r\n";
         $this->updateddc->execute([$ddc, $id]);
     }

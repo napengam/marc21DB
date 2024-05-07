@@ -2,12 +2,6 @@
 
 require '../include/connect.inc.php';
 require '../include/core.inc.php';
-require 'marc21.php';
-require 'marc21toDB.php';
-require 'm21HooksDB.php';
-require 'sftpDownload.php';
-require 'getOptions.php';
-//require '../classegetTagData.php';
 
 $opt = new getOptions(['-y', '-w', '-s', '-f']);
 

@@ -26,7 +26,7 @@
 //        $tagInd[0]->subs[1]->data = 'dein Buch';
 //        
 //
-class m21File {
+class marc21 {
 
     private $fh, $filter, $leader, $dict, $data = [], $nRecords, $dataLen;
     public $recordOffset, $pos67, $error = '', $nonSortShow = false;

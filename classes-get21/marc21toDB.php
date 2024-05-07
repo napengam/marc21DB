@@ -1,6 +1,6 @@
 <?php
 
-class marc21toDB extends m21File {
+class marc21toDB extends marc21 {
 
     private $insertTags = "insert into tags (titleid,tag,seq,indicator,subfieldcode,subfielddata) values ",
             $insertTitles = "insert into titles (sourceid,offset) values (?,?)",
@@ -57,7 +57,7 @@ class marc21toDB extends m21File {
         $go = false;
         if (is_callable([$this->hook, 'hookAfterTitleInsert'])) {
             $go = true;
-            $allTags = new getTagData($this->db);
+            $allTags = new isbdElements($this->db);
         }
 
         $placeh = "(?,?,?,?,?,?)";

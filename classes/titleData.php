@@ -8,15 +8,13 @@ class titleData {
     private $tm;
 
     function __construct($db) {
-        $this->tm = new tags2mem($db);
+        $this->tm = new isbdElements($db);
     }
 
     function makeISBD($titleid) {
 
         $tm = $this->tm;
         $tm->setTags($titleid);
-
-        $isb = new isbdElements($tm);
 
         /*
          * ***********************************************
@@ -34,7 +32,7 @@ class titleData {
          */
 
 
-        $ti = $isb->title();
+        $ti = $tm->title();
         $ti = "<span class='theTitle'> $ti  $dnb</span>";
         /*
          * ***********************************************
@@ -42,7 +40,7 @@ class titleData {
          * **********************************************
          */
 
-        $au = $isb->author();
+        $au = $tm->author();
 
         $href = '';
         $x = $tm->getData('100', 1, '0');
@@ -64,35 +62,35 @@ class titleData {
          * ISBN Price
          * **********************************************
          */
-        $isbn = $isb->isbn();
-        $isbn .= " " . $isb->price();
+        $tmn = $tm->isbn();
+        $tmn .= " " . $tm->price();
 
         /*
          * ***********************************************
          * DDC
          * **********************************************
          */
-        $ddc = $isb->ddc();
+        $ddc = $tm->ddc();
 
         /*
          * ***********************************************
          * Verlagsort
          * **********************************************
          */
-        $vo = $isb->ort();
+        $vo = $tm->ort();
         /*
          * ***********************************************
          * Verlag
          * **********************************************
          */
-        $vl = $isb->verlag();
+        $vl = $tm->verlag();
 
         /*
          * ***********************************************
          * physical description
          * **********************************************
          */
-        $dc = $isb->physical();
+        $dc = $tm->physical();
 
         /*
          * ***********************************************
@@ -101,13 +99,13 @@ class titleData {
          */
 
         $ix = '';
-        $xxx = $isb->index();
+        $xxx = $tm->index();
         $x = $xxx[0];
         $href = $xxx[1];
         if ($x) {
             $ix .= "$x <a href='$href' target='nn' data-what='$x' onclick='marc21DB.showBookContent(this)'><i class='fa-solid fa-bars'></i></a> ";
         }
-        $xxx = $isb->content();
+        $xxx = $tm->content();
         $x = $xxx[0];
         $href = $xxx[1];
         if ($x) {
@@ -123,8 +121,8 @@ class titleData {
             $au = "<br>$au";
         }
 
-        if (trim($isbn)) {
-            $isbn = "<br>$isbn";
+        if (trim($tmn)) {
+            $tmn = "<br>$tmn";
         }
         if (trim($ix)) {
             $ix = "<br>$ix";
@@ -137,7 +135,7 @@ class titleData {
         }
         $title = "title='Alle Tags für diesen Titel zeigen'";
         $topLine = $this->level($titleid, $ddc);
-        $out = "$topLine<b>$ti</b>$au$vo $vl $dc$isbn$ix";
+        $out = "$topLine<b>$ti</b>$au$vo $vl $dc$tmn$ix";
 
         return $out;
     }
