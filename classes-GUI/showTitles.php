@@ -21,8 +21,11 @@ class showTitles {
 
 
         $xx = new titleData($connect_pdo);
-
-        if ($this->param->ddc !== '') {
+        if ($this->param->search !== '') {
+            $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
+            $ttt = $connect_pdo->prepare($q);
+            $ttt->execute([$this->param->colname, $this->param->search]);
+        } else if ($this->param->ddc !== '') {
             $q = "select id from titles where sourceid=? and ddc=?";
             $ttt = $connect_pdo->prepare($q);
             $ttt->execute([$this->param->id, $this->param->ddc]);
