@@ -119,4 +119,10 @@ class isbdElements extends tags2mem {
         }
         return [$x, $href];
     }
+
+    function serie() {
+        $x = $this->getData('A00', 1, '');
+
+        return $x;
+    }
 }

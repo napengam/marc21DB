@@ -133,14 +133,22 @@ class titleData {
         if (trim($vl)) {
             $vl = " ; $vl";
         }
+        /*
+         * ***********************************************
+         * series
+         * **********************************************
+         */
+
+        $syw = $tm->serie();
+
         $title = "title='Alle Tags für diesen Titel zeigen'";
-        $topLine = $this->level($titleid, $ddc);
+        $topLine = $this->level($titleid, $ddc,$syw);
         $out = "$topLine<b>$ti</b>$au$vo $vl $dc$tmn$ix";
 
         return $out;
     }
 
-    function level($id, $ddc) {
+    function level($id, $ddc, $syw) {
         $out = "
         <!-- Main container -->
         <nav class='level'>
@@ -151,6 +159,9 @@ class titleData {
                 </div>
                 <div class='level-item'>
                     <p>/ $ddc</p> 
+                </div>
+                <div class='level-item'>
+                    <p>/ $syw</p> 
                 </div>
             </div>
            <!-- Right side -->

@@ -30,6 +30,18 @@ class tags2mem {
         $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter";
         $ta = $this->db->query($q);
         $this->tags = $ta->fetchAll();
+
+        /*
+         * ***********************************************
+         * fake tag A00 to hold Series and year and week
+         * **********************************************
+         */
+
+        $q = "select substring(file,1,5) as syw from sources where id=(select sourceid from titles where id='$titleid')";
+        $ss = $this->db->query($q);
+        $syw = $ss->fetch();
+
+        $this->tags[] = (object) ['tag' => 'A00', 'seq' => 1, 'indicator' => '', 'subfieldCode' => 'a', 'subfielddata' => $syw->syw];
         return $this->tags;
     }
 
