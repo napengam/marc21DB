@@ -23,6 +23,16 @@ function marc21DBF() {
             showTitles(t);
         });
         // *****************************************
+        // init fulltext search
+        // ******************************************
+
+        let se = document.getElementById('searchnav').querySelectorAll('input');
+        se.forEach((elem) => {
+            elem.addEventListener('change', search, false);
+        }
+        );
+
+        // *****************************************
         // set footer with pager
         // ******************************************
         posfoot();
@@ -101,16 +111,30 @@ function marc21DBF() {
             tiCursor.end = tiCursor.max;
             ddcText = ' / DDC ' + ddc + ', ' + t.cells[2].innerText;
         }
+        let searchVal = '';
+        let colname = '';
+        if (typeof t.dataset.pattern !== 'undefined' && t.dataset.pattern.trim() !== '') {
+            searchVal = t.dataset.pattern;
+            colname = t.dataset.colname;
+            tiCursor.start = 0;
+            tiCursor.end = tiCursor.max;
+            t.dataset.pattern = '';
+            if (searchVal) {
+                let obj = document.getElementById('ddc');
+                if (obj) {
+                    obj.innerHTML = '';
+                }
+            }
+        }
         lastTitleIn = null;
         backend.callDirect('classes-GUI/showTitles.php',
-                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor},
+                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'search': searchVal, 'colname': colname, 'cursor': tiCursor},
                 (resPkg) => {
 
-            if (resPkg.error != '') {
+            if (resPkg.error !== '') {
                 dialogs.myInform(resPkg.error);
                 return;
             }
-
 
             let obj = document.getElementById('titles');
             if (obj) {
@@ -146,13 +170,15 @@ function marc21DBF() {
                 }
             }
             addShowHideClick();
-
+            if (document.getElementById('ddc').innerHTML === '' && searchVal==='') {
+                showDDC();
+            }
         });
     }
     function showDDC() {
 
         backend.callDirect('classes-GUI/showDDC.php', {'id': sourceid, 'uuid': uuid}, (resPkg) => {
-            if (resPkg.error != '') {
+            if (resPkg.error !== '') {
                 dialogs.myInform(resPkg.error);
                 return;
             }
@@ -190,6 +216,14 @@ function marc21DBF() {
             makeSticky('ddctable', {'col': 0, 'loff': 0, 'toff': 0});
         });
     }
+    function search(e) {
+
+        this.dataset.pattern = this.value;
+        this.dataset.colname = this.id;
+        showOnlyTitles(this);
+    }
+
+
 
     function showRaw(t) {
         let titleid = t.dataset.id;
