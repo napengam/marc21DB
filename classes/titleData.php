@@ -16,6 +16,8 @@ class titleData {
         $tm = $this->tm;
         $tm->setTags($titleid);
 
+        $isb = new isbdElements($tm);
+
         /*
          * ***********************************************
          * dnb info
@@ -30,20 +32,17 @@ class titleData {
          * Titel und zusatz
          * **********************************************
          */
-        $tia = [];
-        $tia[] = $tm->getData('245', 1, 'a');
-        $tia[] = $tm->getData('245', 1, 'b');
 
-        $ti = "<span class='theTitle'>" . implode(' / ', array_filter($tia)) . " $dnb</span>";
+
+        $ti = $isb->title();
+        $ti = "<span class='theTitle'> $ti  $dnb</span>";
         /*
          * ***********************************************
          * autor
          * **********************************************
          */
 
-        $au = $tm->getData('100', 1, 'a');
-        $au .= " " . $tm->getData('100', 1, 'd');
-        $au .= " " . $tm->getData('100', 1, 'e');
+        $au = $isb->author();
 
         $href = '';
         $x = $tm->getData('100', 1, '0');
@@ -65,70 +64,35 @@ class titleData {
          * ISBN Price
          * **********************************************
          */
-        $isbn = $tm->getData('020', 1, '9');
-        $isbn .= " " . $tm->getData('020', 1, 'c');
+        $isbn = $isb->isbn();
+        $isbn .= " " . $isb->price();
 
         /*
          * ***********************************************
          * DDC
          * **********************************************
          */
-        $ddc = '';
-        $q = $tm->getData('082', 1, 'q');
-        $q2 = $tm->getData('082', 1, '2');
-        if ($q == 'DE-101' && mb_substr($q2, 2) == 'sdnb') {
-            $ddc = $tm->getData('082', 1, 'a');
-        }
-        if ($ddc == '') {
-            $q = $tm->getData('083', 1, 'q');
-            $q2 = $tm->getData('083', 1, '2');
-            if ($q == 'DE-101' && mb_substr($q2, 2) == 'sdnb') {
-                $ddc = $tm->getData('083', 1, 'a');
-            }
-            $q = $tm->getData('083', 2, 'q');
-            $q2 = $tm->getData('083', 2, '2');
-            if ($q == 'DE-101' && mb_substr($q2, 2) == 'sdnb') {
-                $ddc .= " " . $tm->getData('083', 2, 'a');
-            }
-        }
+        $ddc = $isb->ddc();
 
         /*
          * ***********************************************
          * Verlagsort
          * **********************************************
          */
-        $vo = $c = '';
-        $x = $tm->getData('264', 1, 'a');
-        while ($x !== null) {
-            $vo .= $c . $x;
-            $c = ', ';
-            $x = $tm->getData('264', 1, 'a');
-        }
+        $vo = $isb->ort();
         /*
          * ***********************************************
          * Verlag
          * **********************************************
          */
-        $vl = $c = '';
-        $x = $tm->getData('264', 1, 'b');
-        while ($x !== null) {
-            $vl .= $c . $x;
-            $c = ', ';
-            $x = $tm->getData('264', 1, 'b');
-        }
+        $vl = $isb->verlag();
 
         /*
          * ***********************************************
          * physical description
          * **********************************************
          */
-        $dc = $c = '';
-        $x = $tm->getData('300', 1, '');
-        while ($x !== null) {
-            $dc .= $c . $x;
-            $c = ', ';
-            $x = $tm->getData('300', 1, '');
-        }
+        $dc = $isb->physical();
 
         /*
          * ***********************************************
@@ -137,17 +101,18 @@ class titleData {
          */
 
         $ix = '';
-        $x = $tm->getData('856', 1, '3');
-        if ($x === 'Inhaltstext' || $x === 'Inhaltsverzeichnis') {
-            $href = $tm->getData('856', 1, 'u');
+        $xxx = $isb->index();
+        $x = $xxx[0];
+        $href = $xxx[1];
+        if ($x) {
             $ix .= "$x <a href='$href' target='nn' data-what='$x' onclick='marc21DB.showBookContent(this)'><i class='fa-solid fa-bars'></i></a> ";
         }
-        $x = $tm->getData('856', 2, '3');
-        if ($x === 'Inhaltstext' || $x === 'Inhaltsverzeichnis') {
-            $href = $tm->getData('856', 2, 'u');
+        $xxx = $isb->content();
+        $x = $xxx[0];
+        $href = $xxx[1];
+        if ($x) {
             $ix .= "$x  <a href='$href' target='nn' data-what='$x'  onclick='marc21DB.showBookContent(this)'> <i class='fa-solid fa-bars'></i></a> ";
         }
-
         /*
          * ***********************************************
          * assemble title
