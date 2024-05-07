@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 16. Apr 2024 um 14:54
+-- Erstellungszeit: 07. Mai 2024 um 22:42
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -2041,7 +2041,22 @@ INSERT INTO `ddc` (`id`, `ddc`, `isolang`, `descript`) VALUES
 (7986, '996', 'de', 'Andere Teile des Pazifiks; Polynesien '),
 (7987, '997', 'de', 'Inseln im Atlantischen Ozean '),
 (7988, '998', 'de', 'Arktische Inseln & Antarktis '),
-(7989, '999', 'de', 'Außerirdische Welten');
+(7989, '999', 'de', 'Außerirdische Welten'),
+(7990, 'K', 'de', 'Kinderbuch'),
+(7991, 'S', 'de', 'Schulbuch');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `search`
+--
+
+CREATE TABLE `search` (
+  `id` int(11) NOT NULL,
+  `titleid` int(11) NOT NULL,
+  `colname` char(16) NOT NULL,
+  `what` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -2098,6 +2113,14 @@ ALTER TABLE `ddc`
   ADD KEY `code-lang` (`ddc`,`isolang`);
 
 --
+-- Indizes für die Tabelle `search`
+--
+ALTER TABLE `search`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `delserach` (`titleid`);
+ALTER TABLE `search` ADD FULLTEXT KEY `fulltext` (`what`);
+
+--
 -- Indizes für die Tabelle `sources`
 --
 ALTER TABLE `sources`
@@ -2127,7 +2150,13 @@ ALTER TABLE `titles`
 -- AUTO_INCREMENT für Tabelle `ddc`
 --
 ALTER TABLE `ddc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7990;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7992;
+
+--
+-- AUTO_INCREMENT für Tabelle `search`
+--
+ALTER TABLE `search`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `sources`
@@ -2150,6 +2179,12 @@ ALTER TABLE `titles`
 --
 -- Constraints der exportierten Tabellen
 --
+
+--
+-- Constraints der Tabelle `search`
+--
+ALTER TABLE `search`
+  ADD CONSTRAINT `delserach` FOREIGN KEY (`titleid`) REFERENCES `titles` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints der Tabelle `tags`
