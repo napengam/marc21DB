@@ -9,6 +9,7 @@ spl_autoload_register(function ($class) {
     $dirs[] = $dir . '/classes/';
     $dirs[] = $dir . '/classes-get21/';
     $dirs[] = $dir . '/classes-GUI/';
+    $dirs[] = $dir . '/classes-Hooks/';
 
     $class_path = str_replace('\\', '/', $class);
     foreach ($dirs as $dir) {
