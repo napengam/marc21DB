@@ -81,6 +81,9 @@ Parameters are:
 Upon succes the script will continously print out the internal id of 
 the title loaded and the ddc associated with this title.
 
+While loading from the file the table search is filled with the title author and publisher  
+in order to allow for fulltext search within these fields  
+
 ### Step4 
 
 Now you can call your URL adressing **marc21DB**
