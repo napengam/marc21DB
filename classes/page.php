@@ -39,10 +39,14 @@ class page {
                 <div class = 'hero is-small' >
                     <div class = 'hero-body' style = 'background-image:url(imgHome/sea-boat.jpg);background-repeat:round'>
                         <p style = 'color:white' class = 'title'>
-                        <a style = 'color:white' href = '../index.php'>
+                        <a title='Go to my website' style = 'color:white' href = 'https://hgsweb.de'>
                         <i style = 'font-size:smaller' class = 'fa fa-home'></i> 
                           $title
-                        </a> 
+                              </a> 
+                              &nbsp;<span style = 'font-size:smaller'>
+                              <a title='find sources at github'  href='https://github.com/napengam/marc21DB'><i class='fab fa-github'></i></a>
+                              </span>
+                        
                           <p style = 'color:white' class = 'subtitle'>
                           <span id='dnbfile' ></span>
                     </div>
