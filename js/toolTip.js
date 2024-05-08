@@ -55,8 +55,20 @@ function toolTip(force = true) {
         newTip.style.borderStyle = 'solid';
         newTip.style.borderWidth = '1px';
         newTip.style.padding = ' 4px';
+        newTip.style.zIndex = heighestZIndex() ;
         document.body.appendChild(newTip);
         return newTip;
+    }
+    function heighestZIndex() {// return highest Z-Index along the parent path
+        var list, z = 51, zz = 0;
+        list = document.querySelectorAll("[style*='z-index:']");
+        list.forEach((elem) => {
+            zz = parseInt(elem.style.zindex, 10);
+            if (zz > z) {
+                z = zz;
+            }
+        });
+        return z;
     }
     return{
         addTip: addTip // for elements added after calling toolTip
