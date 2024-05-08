@@ -27,7 +27,8 @@ class tags2mem {
         if ($this->filter) {
             $tagFilter = " and tags in ($this->filter) ";
         }
-        $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter";
+        $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter "
+                . " order by tag,seq";
         $ta = $this->db->query($q);
         $this->tags = $ta->fetchAll();
 
@@ -48,8 +49,17 @@ class tags2mem {
 
     function getData($tag, $seq, $code, $consumed = true) {
 
-        foreach ($this->tags as $aTag) {
-            if ($aTag->tag === $tag && $aTag->seq === $seq && ($aTag->subfieldcode === $code || $code == '') && !$aTag->consumed) {
+        $p = $this->fast_in_array($this->tags, $tag);
+        if ($p === -1) {
+            return null; // no such tag
+        }
+
+        for (; $p < count($this->tags); $p++) {
+            $aTag = $this->tags[$p];
+            if ($aTag->tag !== $tag) {
+                break; // not found 
+            }
+            if ($aTag->seq === $seq && ($aTag->subfieldcode === $code || $code == '') && !$aTag->consumed) {
                 $aTag->consumed = $consumed;
                 return $aTag->subfielddata;
             }
@@ -61,5 +71,32 @@ class tags2mem {
         foreach ($this->tags as &$aTag) {
             $aTag->consumed = false;
         }
+    }
+
+    private function fast_in_array($tags, $tag) {
+
+        if (strlen(trim($tag)) == 0) {
+            return -1;
+        }
+        $top = sizeof($tags) - 1;
+        $bot = 0;
+
+        while ($top >= $bot) {
+            $p = floor(($top + $bot) / 2);
+            if ($tags[$p]->tag < $tag) {
+                $bot = $p + 1;
+            } else if ($tags[$p]->tag > $tag) {
+                $top = $p - 1;
+            } else {
+                for ($p - 1; $p >= 0; $p--) {
+                    if ($tags[$p]->tag !== $tag) {
+                        $p++;
+                        break;
+                    }
+                }
+                return $p;
+            }
+        }
+        return -1;
     }
 }
