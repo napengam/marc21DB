@@ -124,6 +124,8 @@ function marc21DBF() {
                 if (obj) {
                     obj.innerHTML = '';
                 }
+                let payload = {'uuid': uuid, 'search': searchVal, 'colname': colname};
+                showDDC(payload)
             }
         }
         lastTitleIn = null;
@@ -170,14 +172,26 @@ function marc21DBF() {
                 }
             }
             addShowHideClick();
-            if (document.getElementById('ddc').innerHTML === '' && searchVal==='') {
+            if (document.getElementById('ddc').innerHTML === '' && searchVal === '') {
                 showDDC();
             }
         });
     }
-    function showDDC() {
+    function showDDC(param = null) {
 
-        backend.callDirect('classes-GUI/showDDC.php', {'id': sourceid, 'uuid': uuid}, (resPkg) => {
+
+        let script, payload;
+
+
+        script = 'classes-GUI/showDDC.php';
+        payload = {'id': sourceid, 'uuid': uuid};
+        
+        if (param !== null &&1===2) {  // disable path
+             script = 'classes-GUI/showSearchDDC.php';
+            payload = param;
+        }
+
+        backend.callDirect(script, payload, (resPkg) => {
             if (resPkg.error !== '') {
                 dialogs.myInform(resPkg.error);
                 return;
