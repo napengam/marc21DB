@@ -125,7 +125,7 @@ function marc21DBF() {
                     obj.innerHTML = '';
                 }
                 let payload = {'uuid': uuid, 'search': searchVal, 'colname': colname};
-                showDDC(payload)
+               
             }
         }
         lastTitleIn = null;
