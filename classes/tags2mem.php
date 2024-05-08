@@ -27,8 +27,7 @@ class tags2mem {
         if ($this->filter) {
             $tagFilter = " and tags in ($this->filter) ";
         }
-        $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter "
-                . " order by tag,seq";
+        $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter ";
         $ta = $this->db->query($q);
         $this->tags = $ta->fetchAll();
 
@@ -44,6 +43,12 @@ class tags2mem {
 
         $this->tags[] = (object) ['tag' => 'A00', 'seq' => 1, 'indicator' => '',
                     'subfieldcode' => 'a', 'subfielddata' => $syw->syw, 'consumed' => 0];
+        /*
+         * ***********************************************
+         * sort for binary search to work
+         * **********************************************
+         */
+        usort($this->tags, [$this, "compare"]);
         return $this->tags;
     }
 
@@ -98,5 +103,23 @@ class tags2mem {
             }
         }
         return -1;
+    }
+
+    private function compare($a, $b) {
+        if ($a->tag < $b->tag) {
+            return -1;
+        }
+        if ($a->tag > $b->tag) {
+            return 1;
+        }
+        if ($a->tag == $b->tag) {
+            if ($a->seq < $b->seq) {
+                return -1;
+            }
+            if ($a->seq > $b->seq) {
+                return 1;
+            }
+        }
+        return 0;
     }
 }
