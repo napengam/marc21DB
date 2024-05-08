@@ -60,10 +60,10 @@ function toolTip(force = true) {
         return newTip;
     }
     function heighestZIndex() {// return highest Z-Index along the parent path
-        var list, z = 51, zz = 0;
+        var list, z = 0, zz = 0;
         list = document.querySelectorAll("[style*='z-index:']");
         list.forEach((elem) => {
-            zz = parseInt(elem.style.zindex, 10);
+            zz = parseInt(elem.style.zIndex, 10);
             if (zz > z) {
                 z = zz;
             }
