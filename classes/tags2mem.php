@@ -41,7 +41,8 @@ class tags2mem {
         $ss = $this->db->query($q);
         $syw = $ss->fetch();
 
-        $this->tags[] = (object) ['tag' => 'A00', 'seq' => 1, 'indicator' => '', 'subfieldCode' => 'a', 'subfielddata' => $syw->syw];
+        $this->tags[] = (object) ['tag' => 'A00', 'seq' => 1, 'indicator' => '',
+                    'subfieldcode' => 'a', 'subfielddata' => $syw->syw, 'consumed' => 0];
         return $this->tags;
     }
 
