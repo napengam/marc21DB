@@ -53,6 +53,7 @@ This will create a database
 - fill table **ddc** with the code and description
 - create constraints for cascading delete   
 
+
 ### Step 2
 
 In the directory **marc21DB/include** edit the file **connect.inc.php** in order to set
@@ -60,6 +61,15 @@ the neccessary _dbname_ , _user_ and _password_ for your database.
 
 File **adressPort.inc.php** keeps adress of a websocket server to allow the backend to send feedback to the client
 If you are not using my [phpWebsocketServer](https://github.com/napengam/phpWebSocketServer) do not set **$Address** in there, 
+
+In the include Directory run   
+
+``
+php ddc2DB.php
+``
+
+This will fill table ddc with code and description for language 'de' and 'en'
+
 
 ### Step 3
 

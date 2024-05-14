@@ -9,6 +9,7 @@ class titleData {
 
     function __construct($db) {
         $this->tm = new isbdElements($db);
+        
     }
 
     function makeISBD($titleid) {
@@ -142,7 +143,7 @@ class titleData {
         $syw = $tm->serie();
 
         $title = "title='Alle Tags für diesen Titel zeigen'";
-        $topLine = $this->level($titleid, $ddc,$syw);
+        $topLine = $this->level($titleid, $ddc, $syw);
         $out = "$topLine<b>$ti</b>$au$vo $vl $dc$tmn$ix";
 
         return $out;

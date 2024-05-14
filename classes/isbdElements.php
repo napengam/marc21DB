@@ -17,7 +17,7 @@ class isbdElements extends tags2mem {
     }
 
     function getAllTags($titleid) {
-        $this->setTags($titleid);
+         $this->setTags($titleid);
     }
 
     function title() {

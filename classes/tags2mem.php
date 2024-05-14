@@ -25,7 +25,7 @@ class tags2mem {
         $this->tags = [];
         $tagFilter = '';
         if ($this->filter) {
-            $tagFilter = " and tags in ($this->filter) ";
+            $tagFilter = " and tag in ($this->filter) ";
         }
         $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter ";
         $ta = $this->db->query($q);
@@ -62,7 +62,7 @@ class tags2mem {
         for (; $p < count($this->tags); $p++) {
             $aTag = $this->tags[$p];
             if ($aTag->tag !== $tag) {
-                break; // not found 
+                break; // not found, out of tag block
             }
             if ($aTag->seq === $seq && ($aTag->subfieldcode === $code || $code == '') && !$aTag->consumed) {
                 $aTag->consumed = $consumed;
@@ -93,6 +93,7 @@ class tags2mem {
             } else if ($tags[$p]->tag > $tag) {
                 $top = $p - 1;
             } else {
+                // go back to start of tag block
                 for ($p - 1; $p >= 0; $p--) {
                     if ($tags[$p]->tag !== $tag) {
                         $p++;

@@ -471,7 +471,6 @@ function marc21DBF() {
             obj = document.getElementById(objs);
         } else {
             obj = objs;
-            F
         }
 
         if (typeof parent === 'undefined') {
