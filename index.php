@@ -1,5 +1,4 @@
 <?php
-
 require 'include/connect.inc.php';
 require 'include/core.inc.php';
 require 'include/adressPort.inc.php';
@@ -41,7 +40,9 @@ echo
 var server='$Address';
 var csfr='$csfr';    
 </script>";
+
 ?>
+
 <script src="js/utils.js"></script>
 <script src="js/toolTip.js"></script>
 <script src="js/socketWebClient.js"></script>
@@ -50,10 +51,10 @@ var csfr='$csfr';
 <script src="js/sortTable.js"></script>
 <script src="js/bulmaDialog.js"></script>
 <script src="js/myBackend.js"></script>
+
 <script src="js21/marc21DB.js"></script>
 
 <?php
-
 $pg->footer();
 $pg->closePage();
 
