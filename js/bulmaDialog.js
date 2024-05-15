@@ -50,13 +50,13 @@ function bulmaDialog(language = 'en') {
     }
     zIndex = heighestZIndex();
     dialog =
-`<dialog id='bulmaDialog' class='outerDialog' style='z-index:${zIndex};position:fixed;width:fit_content;height:fit-content'>
+            `<dialog id='bulmaDialog' class='outerDialog' style='z-index:${zIndex};position:fixed;width:fit_content;height:fit-content'>
     <div class="message">
-        <div class="message-header has-background-grey-light diagDrag">
+        <div class="p-1 is-size-7 message-header has-background-grey-light diagDrag">
             <span id=msghead>No text given</span>
             <button class="delete" aria-label="delete" title=${lt.close}></button>
         </div>
-        <div class="message-body">
+        <div class="message-body" style="overflow:auto;max-width:400px;max-height:600px">
             numquam Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde, aliquam?
         </div>
     </div>
@@ -194,7 +194,6 @@ function bulmaDialog(language = 'en') {
         }
         diag.querySelector('IFRAME').src = '';
         positionDialogShow(diag);
-
     }
 
     function setButton(options) {
@@ -235,6 +234,10 @@ function bulmaDialog(language = 'en') {
     }
     function resetDialog() {
         diag.close();
+
+        document.querySelector('#bulmaDialog').style.width = 'fit-content';
+        document.querySelector('#bulmaDialog').style.height = 'fit-content';
+
         diag.querySelector('#bulmaDialogUpload').style.display = 'none';
         diag.querySelector('#diaghide').style.display = 'block';
         diag.querySelectorAll('.level-item, .label , .input, .button').forEach((elem) => {
@@ -256,7 +259,7 @@ function bulmaDialog(language = 'en') {
     }
 
     function closeDiag() {
-       
+        event.preventDefault();
         let pw = diag.querySelector('[name=in2]');
         pw.type = 'text';
         if (typeof beforeCloseHook === 'function') {
