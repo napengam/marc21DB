@@ -53,10 +53,10 @@ function bulmaDialog(language = 'en') {
             `<dialog id='bulmaDialog' class='outerDialog' style='z-index:${zIndex};position:fixed;width:fit_content;height:fit-content'>
     <div class="message">
         <div class="p-1 is-size-7 message-header has-background-grey-light diagDrag">
-            <span id=msghead>No text given</span>
-            <button class="delete" aria-label="delete" title=${lt.close}></button>
+            <span id=msghead class='has-text-white'>No text given</span>
+            <button class="delete is-danger" aria-label="delete" title=${lt.close}></button>
         </div>
-        <div class="message-body" style="overflow:auto;max-width:400px;max-height:600px">
+        <div class="message-body" style="overflow:auto;max-width:800px;max-height:1600px">
             numquam Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde, aliquam?
         </div>
     </div>
