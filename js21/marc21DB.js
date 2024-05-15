@@ -10,6 +10,10 @@ function marc21DBF() {
     var sourceid, name, st, uuid, allids = [], lastTitleIn = null,
             tiCursor = {'max': 500, 'n': 0, 'start': 0, 'end': 500 - 1, 'total': 0, 'ids': []};
     function start() {
+
+
+        util.mapFunctions(document.body, '[data-funame]', marc21DB);
+
         // *****************************************
         // sets selector in header
         // ******************************************
@@ -125,7 +129,7 @@ function marc21DBF() {
                     obj.innerHTML = '';
                 }
                 let payload = {'uuid': uuid, 'search': searchVal, 'colname': colname};
-               
+
             }
         }
         lastTitleIn = null;
@@ -143,6 +147,7 @@ function marc21DBF() {
                 obj.innerHTML = resPkg.result;
                 obj.style.height = 'fit-content';
             }
+            util.mapFunctions(obj, '[data-funame]', marc21DB);
 
             allids = resPkg.ids;
             //document.body.style.height = (document.body.clientHeight + document.getElementById('pgfoot').clientHeight) + 'px';
@@ -185,9 +190,9 @@ function marc21DBF() {
 
         script = 'classes-GUI/showDDC.php';
         payload = {'id': sourceid, 'uuid': uuid};
-        
-        if (param !== null &&1===2) {  // disable path
-             script = 'classes-GUI/showSearchDDC.php';
+
+        if (param !== null && 1 === 2) {  // disable path
+            script = 'classes-GUI/showSearchDDC.php';
             payload = param;
         }
 
@@ -239,17 +244,18 @@ function marc21DBF() {
 
 
 
-    function showRaw(t) {
-        let titleid = t.dataset.id;
+    function showRaw() {
+        let titleid = this.dataset.id;
         window.open('classes-GUI/showAllTags.php?titleid=' + titleid, '_blank', 'width=600,height=400');
     }
-    function showBookContent(t) {
+    function showBookContent() {
 
-        if (t.dataset.what === 'Inhaltstext') {
+
+        if (this.dataset.what === 'Inhaltstext') {
             window.event.stopPropagation();
             window.event.preventDefault();
-            let href = t.href;
-            let ti = t.closest('.content').querySelector('.theTitle').textContent;
+            let href = this.href;
+            let ti = this.closest('.content').querySelector('.theTitle').textContent;
             window.open('classes-GUI/showBookContent.php?ti=' + ti + '&href=' + href, '_blank', 'width=600,height=400');
         }
     }
@@ -324,7 +330,7 @@ function marc21DBF() {
     }
     function otherPage() {
 
-        switch (window.event.srcElement.id) {
+        switch (this.id) {
             case 'pfirst':
                 tiCursor.start = -1;
                 movePagination(-1);
@@ -422,8 +428,6 @@ function marc21DBF() {
 
         let boxes = document.getElementById('titles').querySelectorAll('.box');
         boxes.forEach((elem) => {
-            // onmouseover='marc21DB.iconsShow(this)' onmouseout='marc21DB.iconsHide(this)' onclick='marc21DB.iconsActive(this)' 
-
             elem.addEventListener('mouseover', iconsShow, false);
             elem.addEventListener('mouseout', iconsHide, false);
             elem.addEventListener('click', iconsActive, false);
