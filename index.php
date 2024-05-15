@@ -42,6 +42,7 @@ var server='$Address';
 var csfr='$csfr';    
 </script>";
 ?>
+<script src="js/utils.js"></script>
 <script src="js/toolTip.js"></script>
 <script src="js/socketWebClient.js"></script>
 <script src="js/contextMenu.js"></script>
