@@ -79,12 +79,15 @@ function utils() {
         return o;
     }
 
-    let funcs = {
+    let utilFuncs = {
         absPos: absPos,
         heighestZIndex: heighestZIndex,
         mapFunctions: mapFunctions,
         gob: gob
     };
-    return funcs;
 
+    return utilFuncs;
+}
+if (typeof window.util === 'undefined') {
+    window.util = utils();
 }
