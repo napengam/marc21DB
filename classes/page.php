@@ -145,12 +145,12 @@ class page {
                     <div class = 'content has-text-centered'>
                     <nav  id='pager' class='pagination is-centered' role='navigation' aria-label='pagination'>  
                         <span id='prev' class='findme pagination-previous is-hidden' >
-                        <i id='pfirst' $t1 class=' fa-solid fa-backward-step is-clickable' onclick='marc21DB.otherPage()'></i>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a id='pprev' $t2   onclick='marc21DB.otherPage()' >Previous</a>
+                        <i id='pfirst' $t1 class=' fa-solid fa-backward-step is-clickable' data-funame='marc21DB.otherPage'></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a id='pprev' $t2   data-funame='marc21DB.otherPage' >Previous</a>
                         </span>
                         <span id='next'  class='findme pagination-next is-hidden' >
-                       <a id='pnext'  $t3   onclick='marc21DB.otherPage()'>Next page</a>&nbsp;&nbsp;&nbsp;&nbsp;  
-                       <i id='plast'  $t4 class='fa-solid fa-forward-step is-clickable'  onclick='marc21DB.otherPage()'></i>
+                       <a id='pnext'  $t3   data-funame='marc21DB.otherPage'>Next page</a>&nbsp;&nbsp;&nbsp;&nbsp;  
+                       <i id='plast'  $t4 class='fa-solid fa-forward-step is-clickable'  data-funame='marc21DB.otherPage'></i>
                        </span>
                     <ul class='pagination-list'>
                     <li><img src = 'imgHome/boat.jpg' alt = 'alt' width = '100'> <br>

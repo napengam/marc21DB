@@ -9,7 +9,6 @@ class titleData {
 
     function __construct($db) {
         $this->tm = new isbdElements($db);
-        
     }
 
     function makeISBD($titleid) {
@@ -104,13 +103,13 @@ class titleData {
         $x = $xxx[0];
         $href = $xxx[1];
         if ($x) {
-            $ix .= "$x <a href='$href' target='nn' data-what='$x' onclick='marc21DB.showBookContent(this)'><i class='fa-solid fa-bars'></i></a> ";
+            $ix .= "$x <a href='$href' target='nn' data-what='$x' data-funame='marc21DB.showBookContent'><i class='fa-solid fa-bars'></i></a> ";
         }
         $xxx = $tm->content();
         $x = $xxx[0];
         $href = $xxx[1];
         if ($x) {
-            $ix .= "$x  <a href='$href' target='nn' data-what='$x'  onclick='marc21DB.showBookContent(this)'> <i class='fa-solid fa-bars'></i></a> ";
+            $ix .= "$x  <a href='$href' target='nn' data-what='$x'  data-funame='marc21DB.showBookContent'> <i class='fa-solid fa-bars'></i></a> ";
         }
         /*
          * ***********************************************
@@ -167,7 +166,7 @@ class titleData {
             </div>
            <!-- Right side -->
             <div id='levright' class='level-right is-hidden'>
-            <i  data-id='$id'  onclick='marc21DB.showRaw(this)'  class='  is-clickable fa-solid fa-magnifying-glass-plus' ></i>
+            <i  data-id='$id'  data-funame='marc21DB.showRaw'  class='  is-clickable fa-solid fa-magnifying-glass-plus' ></i>
             </div>
         </nav>
         ";
