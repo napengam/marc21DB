@@ -20,7 +20,7 @@ function utils() {
         return {'x': x, 'y': y, 'w': obj.clientWidth, 'h': obj.clientHeight, 'o': obj};
     }
 
-    function heighestZIndex() {// return highest Z-Index along the parent path
+    function heighestZIndex() {// return highest Z-Index 
         var list, z = 51, zz = 0;
         list = document.querySelectorAll("[style*='z-index:']");
         list.forEach((elem) => {
