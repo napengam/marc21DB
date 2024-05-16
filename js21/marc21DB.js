@@ -22,9 +22,10 @@ function marc21DBF() {
                 dialogs.myInform(resPkg.error);
                 return;
             }
-            document.getElementById("selector").selectedIndex = 1; // fake select of first option
-            let t = {dataset: ''}; // fake it
-            showTitles(t);
+            setTimeout(() => {
+                util.mouseEventHere('selector', 'change');
+            }, 200);
+
         });
         // *****************************************
         // init fulltext search
@@ -49,6 +50,7 @@ function marc21DBF() {
         socket.setCallbackStatus(sockStatus);
         socket.setCallbackClose(closeSocket);
         socket.init();
+
     }
 
     function sockStatus(m) {
