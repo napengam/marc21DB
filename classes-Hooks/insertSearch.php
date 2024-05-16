@@ -23,10 +23,16 @@ class insertSearch {
         $this->isbd->getAllTags($titleid);
 
         $ti = $this->isbd->title();
-        $this->insert->execute([$titleid, 'title', $ti]);
+        if ($ti !== '') {
+            $this->insert->execute([$titleid, 'title', $ti]);
+        }
         $ti = $this->isbd->author();
-        $this->insert->execute([$titleid, 'autor', $ti]);
+        if ($ti !== '') {
+            $this->insert->execute([$titleid, 'autor', $ti]);
+        }
         $ti = $this->isbd->verlag();
-        $this->insert->execute([$titleid, 'verlag', $ti]);
+        if ($ti !== '') {
+            $this->insert->execute([$titleid, 'verlag', $ti]);
+        }
     }
 }
