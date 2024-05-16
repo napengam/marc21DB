@@ -78,12 +78,21 @@ function utils() {
         }
         return o;
     }
+    function mouseEventHere(idObj, eventType) {
+        let evtObj, fireOnThis;
+        fireOnThis = gob(idObj);
+        evtObj = document.createEvent('MouseEvents');
+        evtObj.initEvent(eventType, true, true);
+        fireOnThis.dispatchEvent(evtObj);
+    }
+
 
     let utilFuncs = {
         absPos: absPos,
         heighestZIndex: heighestZIndex,
         mapFunctions: mapFunctions,
-        gob: gob
+        gob: gob,
+        mouseEventHere: mouseEventHere
     };
 
     return utilFuncs;
