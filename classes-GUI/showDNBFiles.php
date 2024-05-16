@@ -13,9 +13,11 @@ class showDNBFiles {
         $rows = filesFromDB::show();
         $out = [];
         $out[] = "<select id='selector' onchange='marc21DB.showTitles(this)'>";
-        $out[] = "<option readonly> -- Wähle-- </option>";
+        $out[] = "<option selected disabled hidden> -- Wähle-- </option>";
+        $selected = 'selected';
         foreach ($rows as $row) {
-            $out[] = "<option data-id='$row->id' data-name='$row->file / $row->nrecs'>$row->yy-$row->ww $row->se $row->nrecs </option>";
+            $out[] = "<option $selected data-id='$row->id' data-name='$row->file / $row->nrecs'>$row->yy-$row->ww $row->se $row->nrecs </option>";
+            $selected = '';
         }
         $out[] = "</select>";
 
