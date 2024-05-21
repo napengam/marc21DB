@@ -7,7 +7,7 @@ socket = socketWebClient(server, '/web');
 window.addEventListener('load', marc21DB.start, false);
 function marc21DBF() {
 
-    var sourceid, name, st, uuid, allids = [], lastTitleIn = null,
+    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,
             tiCursor = {'max': 500, 'n': 0, 'start': 0, 'end': 500 - 1, 'total': 0, 'ids': []};
     function start() {
 
@@ -18,11 +18,11 @@ function marc21DBF() {
         // sets selector in header
         // ******************************************
         backend.fetchHTML('selectfile', 'classes-GUI/showDNBFiles.php', {}, (resPkg) => {
-            if (resPkg.error != '') {
+            if (resPkg.error !== '') {
                 dialogs.myInform(resPkg.error);
                 return;
             }
-            setTimeout(() => {
+            setTimeout(() => { // why ??
                 util.mouseEventHere('selector', 'change');
             }, 200);
 
@@ -98,7 +98,7 @@ function marc21DBF() {
         sourceid = opt.dataset.id;
         name = opt.dataset.name;
         sel.selectedIndex = 0;
-        showOnlyTitles(t)
+        showOnlyTitles(t);
         showDDC();
         lastTitleIn = null;
     }
@@ -107,6 +107,7 @@ function marc21DBF() {
         let obj = document.getElementById('titles');
         if (obj) {
             obj.innerHTML = '';
+            obj.classList.add('is-skeleton');
         }
         dialogs.myInform(name + ' Titel lesen');
         let ddc = '';
@@ -148,6 +149,8 @@ function marc21DBF() {
             if (obj) {
                 obj.innerHTML = resPkg.result;
                 obj.style.height = 'fit-content';
+                obj.classList.remove('is-skeleton');
+
             }
             util.mapFunctions(obj, '[data-funame]', marc21DB);
 
@@ -187,8 +190,9 @@ function marc21DBF() {
     function showDDC(param = null) {
 
 
-        let script, payload;
-
+        let script, payload, obj;
+        obj = document.getElementById('ddc');
+        obj.classList.add('is-skeleton');
 
         script = 'classes-GUI/showDDC.php';
         payload = {'id': sourceid, 'uuid': uuid};
@@ -208,6 +212,8 @@ function marc21DBF() {
             if (obj) {
                 obj.innerHTML = '';
                 obj.innerHTML = resPkg.result;
+                obj.classList.remove('is-skeleton');
+
             }
             dialogs.closeDiag();
             let theTable = document.getElementById('ddctable');
