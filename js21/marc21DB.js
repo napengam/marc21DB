@@ -1,4 +1,4 @@
-/*global socket, server, dialogs, backend */
+/* global socket, server, dialogs, backend, util */
 
 backend = myBackend();
 dialogs = bulmaDialog();
@@ -94,7 +94,8 @@ function marc21DBF() {
         if (obj) {
             obj.innerHTML = opt.dataset.name;
         }
-
+        tiCursor = {'max': 500, 'n': 0, 'start': 0, 'end': 500 - 1, 'total': 0, 'ids': []};
+        pagerOff();
         sourceid = opt.dataset.id;
         name = opt.dataset.name;
         sel.selectedIndex = 0;
@@ -257,8 +258,6 @@ function marc21DBF() {
         window.open('classes-GUI/showAllTags.php?titleid=' + titleid, '_blank', 'width=600,height=400');
     }
     function showBookContent() {
-
-
         if (this.dataset.what === 'Inhaltstext') {
             window.event.stopPropagation();
             window.event.preventDefault();
@@ -374,6 +373,7 @@ function marc21DBF() {
                 behavior: 'smooth' // Optional: Add smooth scrolling behavior
             });
             toolTip();
+            util.mapFunctions(obj, '[data-funame]', marc21DB);
             obj = document.getElementById('filter');
             if (obj) {
                 obj.innerHTML = `Titel ${tiCursor.start + 1} bis ${tiCursor.end + 1}`;
@@ -397,8 +397,8 @@ function marc21DBF() {
             document.getElementById('prev').classList.remove('is-hidden');
         }
         tiCursor.ids = [];
-        for (let i = tiCursor.start; i < tiCursor.end; i++) {
-            tiCursor.ids.push(allids[i]);
+        for (let i = tiCursor.start, j = 0; i < tiCursor.end; i++) {
+            tiCursor.ids[j++] = allids[i];
         }
     }
 
