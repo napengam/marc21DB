@@ -4,7 +4,7 @@ class websocketCore {
 
     public $prot, $connected = false, $firstFragment = true, $finBit = true,
             $ident, $socketMaster, $key, $expectedToken, $errorHandshake, $fin, $opcode,
-            $frame, $length, $fromUUID;
+            $frame, $length, $fromUUID, $uuid;
 
     function __construct($Address, $ident = '') {
 
@@ -38,6 +38,7 @@ class websocketCore {
             $prot = 'tcp://';
             $px = '80';
         }
+        $this->prot = $prot;
         /*
          * ***********************************************
          * extract endpoint $app, default= '/'
@@ -61,7 +62,6 @@ class websocketCore {
             $Port = $arr[1];
         }
 
-        $this->prot = $prot;
         if ($Port) {
             $Port = ":$Port";
         } else {
@@ -69,18 +69,22 @@ class websocketCore {
         }
         $errno = 0;
         $errstr = '';
-        $this->socketMaster = stream_socket_client("$prot$Address$Port", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context);
+        try {
+            $this->socketMaster = stream_socket_client("$prot$Address$Port", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context);
 
-        if (!$this->socketMaster) {
-            $this->connected = false;
-            return false;
-        }
-        $this->connected = true;
-        fwrite($this->socketMaster, $this->setHandshake($Address, $app));
-        $buff = fread($this->socketMaster, 1024);
-        if (!$this->getHandshake($buff)) {
-            $this->silent();
-            echo $this->errorHandshake;
+            if (!$this->socketMaster) {
+                $this->connected = false;
+                return false;
+            }
+            $this->connected = true;
+            fwrite($this->socketMaster, $this->setHandshake($Address, $app));
+            $buff = fread($this->socketMaster, 1024);
+            if (!$this->getHandshake($buff)) {
+                $this->silent();
+                echo $this->errorHandshake;
+                return false;
+            }
+        } catch (e) {
             return false;
         }
 
