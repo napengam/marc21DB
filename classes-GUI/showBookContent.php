@@ -16,10 +16,18 @@ class showBookContent {
          * create page
          * **********************************************
          */
+
+        $out = file_get_contents($href);
+
+        if (strpos($out, '<html>')) {
+            echo $out;
+            return;
+        }
+
+
         $pg = new page();
         $pg->docTypeEtal();
 
-        $out = file_get_contents($href);
         $pg->sectionTitel($ti);
         $pg->container();
         echo $out;

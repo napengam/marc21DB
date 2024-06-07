@@ -131,9 +131,7 @@ function marc21DBF() {
                 let obj = document.getElementById('ddc');
                 if (obj) {
                     obj.innerHTML = '';
-                }
-                let payload = {'uuid': uuid, 'search': searchVal, 'colname': colname};
-
+                }              
             }
         }
         lastTitleIn = null;
@@ -343,7 +341,7 @@ function marc21DBF() {
                 movePagination(-1);
                 break;
             case 'pprev':
-                document.getElementById('pnext').classList.remove('is-hidden');
+                document.getElementById('next').classList.remove('is-hidden');
                 movePagination(-1);
                 break;
             case 'pnext':
@@ -385,7 +383,7 @@ function marc21DBF() {
     function movePagination(dir) {
         tiCursor.start = tiCursor.start + tiCursor.max * dir;
         tiCursor.end = tiCursor.end + tiCursor.max * dir;
-        if (tiCursor.start < 0) {
+        if (tiCursor.start <=0 ) {
             tiCursor.start = 0;
             tiCursor.end = Math.min(tiCursor.start + tiCursor.max, tiCursor.total);
             document.getElementById('prev').classList.add('is-hidden');

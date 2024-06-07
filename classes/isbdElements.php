@@ -17,7 +17,7 @@ class isbdElements extends tags2mem {
     }
 
     function getAllTags($titleid) {
-         $this->setTags($titleid);
+        $this->setTags($titleid);
     }
 
     function title() {
@@ -100,6 +100,19 @@ class isbdElements extends tags2mem {
             $x = $this->getData('300', 1, '');
         }
         return $dc;
+    }
+
+    function indexEtAl() {
+        $out = [];
+        $i = 1;
+        do {
+            $x = $this->getData('856', $i, '3');
+            $href = $this->getData('856', $i++, 'u');
+            if ($x) {
+                $out[] = ['x' => $x, 'h' => $href];
+            }
+        } while ($x != null);
+        return $out;
     }
 
     function index() {

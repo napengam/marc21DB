@@ -94,23 +94,26 @@ class titleData {
 
         /*
          * ***********************************************
-         * table of content index
+         * table of content index etc
          * **********************************************
          */
 
-        $ix = '';
-        $xxx = $tm->index();
-        $x = $xxx[0];
-        $href = $xxx[1];
-        if ($x) {
-            $ix .= "$x <a href='$href' target='nn' data-what='$x' data-funame='marc21DB.showBookContent'><i class='fa-solid fa-bars'></i></a> ";
+        $out = $tm->indexEtAl();
+
+        foreach ($out as $o) {
+            $x = $o['x'];
+            $href = $o['h'];
+            if ($x) {
+                $pu = parse_url($href);
+                if (strpos($pu['host'], 'deposit') !== false) {
+                    $ix .= "$x  <a href='$href' target='nn' data-what='$x'  data-funame='marc21DB.showBookContent'> <i class='fa-solid fa-bars'></i></a> ";
+                } else {
+                    $ix .= "$x  <a href='$href' target='nn' > <i class='fa-solid fa-bars'></i></a> ";
+                }
+            }
         }
-        $xxx = $tm->content();
-        $x = $xxx[0];
-        $href = $xxx[1];
-        if ($x) {
-            $ix .= "$x  <a href='$href' target='nn' data-what='$x'  data-funame='marc21DB.showBookContent'> <i class='fa-solid fa-bars'></i></a> ";
-        }
+
+
         /*
          * ***********************************************
          * assemble title

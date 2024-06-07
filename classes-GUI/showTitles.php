@@ -48,7 +48,7 @@ class showTitles {
             $out = $xx->makeISBD($row->id);
             $res[] = "<div  class = 'box'  >"
                     . "<div class='content is-family-sans-serif'>$out<br></div></div>";
-            if ($i % 200 == 0) {
+            if ($i % 200 == 0) {                          
                 $talk->feedback("Lese $i von" . count($rows) . ' Titel');
             }
         }
