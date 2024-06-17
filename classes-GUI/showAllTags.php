@@ -32,6 +32,12 @@ class showAllTags {
                 if ($k == 'consumed') {
                     continue;
                 }
+                if ($k === 'indicator') { 
+                    $v = preg_replace('/\s+/', '_', $v);
+                    if ($v === '__') {
+                        $v = '';
+                    }
+                }
                 $out[] = "<td>$v</td>";
             }
             $out[] = "</tr>";
