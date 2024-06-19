@@ -8,7 +8,7 @@ window.addEventListener('load', marc21DB.start, false);
 function marc21DBF() {
 
     var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,
-            tiCursor = {'max': 500, 'n': 0, 'start': 0, 'end': 500 - 1, 'total': 0, 'ids': []};
+            tiCursor = {'max': 200, 'n': 0, 'start': 0, 'end': 200 - 1, 'total': 0, 'ids': []};
     function start() {
 
 
@@ -94,7 +94,7 @@ function marc21DBF() {
         if (obj) {
             obj.innerHTML = opt.dataset.name;
         }
-        tiCursor = {'max': 500, 'n': 0, 'start': 0, 'end': 500 - 1, 'total': 0, 'ids': []};
+        tiCursor = {'max': 200, 'n': 0, 'start': 0, 'end': 200 - 1, 'total': 0, 'ids': []};
         pagerOff();
         sourceid = opt.dataset.id;
         name = opt.dataset.name;
