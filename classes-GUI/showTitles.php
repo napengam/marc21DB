@@ -46,9 +46,12 @@ class showTitles {
             }
             $j++;
             $out = $xx->makeISBD($row->id);
+            if ($this->param->search !== '') {
+                $out = $this->yellow($this->param->search, $out);
+            }
             $res[] = "<div  class = 'box'  >"
                     . "<div class='content is-family-sans-serif'>$out<br></div></div>";
-            if ($i % 200 == 0) {                          
+            if ($i % 200 == 0) {
                 $talk->feedback("Lese $i von" . count($rows) . ' Titel');
             }
         }
@@ -56,6 +59,20 @@ class showTitles {
         $this->param->ids = $ids;
         $this->param->result = implode('', $res);
         echo $this->closeRequest($this->param);
+    }
+
+    function yellow($word, $line) {
+
+        $arr = explode('*', $word);
+        $word = $arr[0];
+        $b = '\b';
+        if (count($arr) > 1) {
+            $b = '';
+        }
+        $p = '/\b' . $word . "$b/i";
+        $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
+
+        return preg_replace($p, $s, $line);
     }
 }
 
