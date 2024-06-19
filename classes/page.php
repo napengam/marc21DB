@@ -64,7 +64,7 @@ class page {
                         <p> Suche in Titel
                     </div>
                      <div class='level-item'>
-                     <input id='title'  type=text size=20 maxlength=40 placeholder='muster*'>
+                     <input title='mehrere Suchwörte durch Leerzeichen trennen' id='title'  type=text size=20 maxlength=40 placeholder='muster*'>
                     </div>
                 </div>
                 <div class='level-right'>
@@ -72,7 +72,7 @@ class page {
                         <p> Autor
                     </div>
                      <div class='level-item'>
-                     <input id='autor'  type=text size=20 maxlength=40 placeholder='muster*'>
+                     <input title='mehrere Suchwörte durch Leerzeichen trennen'  id='autor'  type=text size=20 maxlength=40 placeholder='muster*'>
                     </div>
                 </div>
                 <div class='level-right'>
@@ -80,7 +80,7 @@ class page {
                         <p> Verlag
                     </div>
                      <div class='level-item'>
-                     <input id='verlag'  type=text size=20 maxlength=40 placeholder='muster*'>
+                     <input title='mehrere Suchwörte durch Leerzeichen trennen'  id='verlag'  type=text size=20 maxlength=40 placeholder='muster*'>
                     </div>
                 </div>
                  <div class='level-right'>
