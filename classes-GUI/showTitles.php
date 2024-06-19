@@ -24,7 +24,7 @@ class showTitles {
         if ($this->param->search !== '') {
             $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
             $ttt = $connect_pdo->prepare($q);
-            $ttt->execute([$this->param->colname, $this->param->search]);
+            $ttt->execute([$this->param->colname, $this->against($this->param->search)]);
         } else if ($this->param->ddc !== '') {
             $q = "select id from titles where sourceid=? and ddc=?";
             $ttt = $connect_pdo->prepare($q);
@@ -61,15 +61,24 @@ class showTitles {
         echo $this->closeRequest($this->param);
     }
 
-    function yellow($word, $line) {
+    function against($words) {
+        $arr = explode(' ', $words);
+        $a = '+' . implode(' +', $arr);
+        return $a;
+    }
 
-        $arr = explode('*', $word);
-        $word = $arr[0];
-        $b = '\b';
-        if (count($arr) > 1) {
-            $b = '';
+    function yellow($words, $line) {
+
+        $arr = explode('*', $words);
+        $words = implode('', $arr);
+        $arr = explode(' ', $words);
+
+        $p = [];
+        foreach ($arr as $word) {
+            $p[] = "$word";
         }
-        $p = '/\b' . $word . "$b/i";
+
+        $p = '/\b' . implode('|\b', $p) . "/i";
         $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
 
         return preg_replace($p, $s, $line);
