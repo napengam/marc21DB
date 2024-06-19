@@ -100,6 +100,7 @@ class titleData {
 
         $out = $tm->indexEtAl();
 
+        $ix = '';
         foreach ($out as $o) {
             $x = $o['x'];
             $href = $o['h'];
