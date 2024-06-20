@@ -7,7 +7,7 @@ socket = socketWebClient(server, '/web');
 window.addEventListener('load', marc21DB.start, false);
 function marc21DBF() {
 
-    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,searchVal,
+    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,searchVal,colname,
             tiCursor = {'max': 200, 'n': 0, 'start': 0, 'end': 200 - 1, 'total': 0, 'ids': []};
     function start() {
 
@@ -120,7 +120,7 @@ function marc21DBF() {
             ddcText = ' / DDC ' + ddc + ', ' + t.cells[2].innerText;
         }
         searchVal = '';
-        let colname = '';
+        colname = '';
         if (typeof t.dataset.pattern !== 'undefined' && t.dataset.pattern.trim() !== '') {
             searchVal = t.dataset.pattern;
             colname = t.dataset.colname;
@@ -357,7 +357,7 @@ function marc21DBF() {
                 break;
         }
         backend.callDirect('classes-GUI/showTitlesPaginate.php',
-                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor,'search': searchVal },
+                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor,'search': searchVal, 'colname': colname },
                 (resPkg) => {
             let obj = document.getElementById('titles');
             if (obj) {
