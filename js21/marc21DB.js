@@ -7,7 +7,7 @@ socket = socketWebClient(server, '/web');
 window.addEventListener('load', marc21DB.start, false);
 function marc21DBF() {
 
-    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,
+    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,searchVal,
             tiCursor = {'max': 200, 'n': 0, 'start': 0, 'end': 200 - 1, 'total': 0, 'ids': []};
     function start() {
 
@@ -37,7 +37,7 @@ function marc21DBF() {
         }
         );
 
-        // *****************************************
+        // *****************************************Fpagi
         // set footer with pager
         // ******************************************
         posfoot();
@@ -119,7 +119,7 @@ function marc21DBF() {
             tiCursor.end = tiCursor.max;
             ddcText = ' / DDC ' + ddc + ', ' + t.cells[2].innerText;
         }
-        let searchVal = '';
+        searchVal = '';
         let colname = '';
         if (typeof t.dataset.pattern !== 'undefined' && t.dataset.pattern.trim() !== '') {
             searchVal = t.dataset.pattern;
@@ -357,7 +357,7 @@ function marc21DBF() {
                 break;
         }
         backend.callDirect('classes-GUI/showTitlesPaginate.php',
-                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor},
+                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor,'search': searchVal },
                 (resPkg) => {
             let obj = document.getElementById('titles');
             if (obj) {
