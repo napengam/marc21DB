@@ -30,6 +30,9 @@ class showTitles {
         $n = count($this->param->cursor['ids']);
         foreach ($this->param->cursor['ids'] as $i => $id) {
             $out = $xx->makeISBD($id);
+            if ($this->param->search !== '') {
+                $out = $this->yellow($this->param->search, $out);
+            }
             $res[] = "<div  class = 'box'><div class='content is-family-sans-serif'>$out<br></div></div>";
             if ($i % 200 == 0) {
                 $talk->feedback("Lese $i von" . $n . ' Titel');
@@ -39,6 +42,23 @@ class showTitles {
 
         $this->param->result = implode('', $res);
         echo $this->closeRequest($this->param);
+    }
+
+    function yellow($words, $line) {
+
+        $arr = explode('*', $words);
+        $words = implode('', $arr);
+        $arr = explode(' ', $words);
+
+        $p = [];
+        foreach ($arr as $word) {
+            $p[] = "$word";
+        }
+
+        $p = '/\b' . implode('|\b', $p) . "/i";
+        $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
+
+        return preg_replace($p, $s, $line);
     }
 }
 
