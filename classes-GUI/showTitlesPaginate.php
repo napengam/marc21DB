@@ -20,7 +20,7 @@ class showTitles {
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
 
-        $xx = new titleData($connect_pdo);
+        $xx = new titleData($connect_pdo,$this->param);
 
         if (count($this->param->cursor['ids']) == 0) {
             echo $this->closeRequest($this->param);
@@ -29,37 +29,15 @@ class showTitles {
         $res = [];
         $n = count($this->param->cursor['ids']);
         foreach ($this->param->cursor['ids'] as $i => $id) {
-            $out = $xx->makeISBD($id);
-            if ($this->param->search !== '') {
-                $out = $this->yellow($this->param->search, $out);
-            }
+            $out = $xx->makeISBD($id);            
             $res[] = "<div  class = 'box'><div class='content is-family-sans-serif'>$out<br></div></div>";
             if ($i % 200 == 0) {
                 $talk->feedback("Lese $i von" . $n . ' Titel');
             }
         }
-
-
         $this->param->result = implode('', $res);
         echo $this->closeRequest($this->param);
-    }
-
-    function yellow($words, $line) {
-
-        $arr = explode('*', $words);
-        $words = implode('', $arr);
-        $arr = explode(' ', $words);
-
-        $p = [];
-        foreach ($arr as $word) {
-            $p[] = "$word";
-        }
-
-        $p = '/\b' . implode('|\b', $p) . "/i";
-        $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
-
-        return preg_replace($p, $s, $line);
-    }
+    }   
 }
 
 $xx = new showTitles();

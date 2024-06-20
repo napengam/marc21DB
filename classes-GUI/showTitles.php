@@ -20,7 +20,7 @@ class showTitles {
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
 
-        $xx = new titleData($connect_pdo);
+        $xx = new titleData($connect_pdo, $this->param);
         if ($this->param->search !== '') {
             $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
             $ttt = $connect_pdo->prepare($q);
@@ -47,7 +47,7 @@ class showTitles {
             $j++;
             $out = $xx->makeISBD($row->id);
             if ($this->param->search !== '') {
-                $out = $this->yellow($this->param->search, $out);
+                //   $out = $this->yellow($this->param->search, $out);
             }
             $res[] = "<div  class = 'box'  >"
                     . "<div class='content is-family-sans-serif'>$out<br></div></div>";
@@ -62,26 +62,9 @@ class showTitles {
     }
 
     function against($words) {
-        $arr = explode(' ', $words);
-        $a = '+' . implode(' +', $arr);
-        return $a;
-    }
-
-    function yellow($words, $line) {
-
-        $arr = explode('*', $words);
-        $words = implode('', $arr);
-        $arr = explode(' ', $words);
-
-        $p = [];
-        foreach ($arr as $word) {
-            $p[] = "$word";
-        }
-
-        $p = '/\b' . implode('|\b', $p) . "/i";
-        $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
-
-        return preg_replace($p, $s, $line);
+        $words = preg_replace('/\s+/', ' +', " " . trim($words));
+        return $words;
+        
     }
 }
 
