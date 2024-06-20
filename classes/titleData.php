@@ -5,10 +5,11 @@ require 'tags2mem.php';
 
 class titleData {
 
-    private $tm;
+    private $tm, $param;
 
-    function __construct($db) {
+    function __construct($db, $param) {
         $this->tm = new isbdElements($db);
+        $this->param = $param;
     }
 
     function makeISBD($titleid) {
@@ -30,10 +31,8 @@ class titleData {
          * Titel und zusatz
          * **********************************************
          */
-
-
         $ti = $tm->title();
-        $ti = "<span class='theTitle'> $ti  $dnb</span>";
+        $ti = $this->yellow($this->param, 'title', $ti);
         /*
          * ***********************************************
          * autor
@@ -41,6 +40,7 @@ class titleData {
          */
 
         $au = $tm->author();
+        $au = $this->yellow($this->param, 'autor', $au);
 
         $href = '';
         $x = $tm->getData('100', 1, '0');
@@ -84,6 +84,7 @@ class titleData {
          * **********************************************
          */
         $vl = $tm->verlag();
+        $vl = $this->yellow($this->param, 'verlag', $vl);
 
         /*
          * ***********************************************
@@ -113,13 +114,15 @@ class titleData {
                 }
             }
         }
-
+  
 
         /*
          * ***********************************************
          * assemble title
          * **********************************************
          */
+
+        $ti = "<span class='theTitle'> $ti  $dnb</span>";
 
         if (trim($au)) {
             $au = "<br>$au";
@@ -142,7 +145,6 @@ class titleData {
          * series
          * **********************************************
          */
-
         $syw = $tm->serie();
 
         $title = "title='Alle Tags für diesen Titel zeigen'";
@@ -150,6 +152,32 @@ class titleData {
         $out = "$topLine<b>$ti</b>$au$vo $vl $dc$tmn$ix";
 
         return $out;
+    }
+
+    function yellow($param, $name, $line) {
+
+
+        $words = $param->search;
+        if (trim($words == '')) {
+            return $line;
+        }
+        if ($param->colname != $name) {
+            return $line;
+        }
+
+        $arr = explode('*', $words);
+        $words = implode('', $arr);
+        $arr = explode(' ', $words);
+
+        $p = [];
+        foreach ($arr as $word) {
+            $p[] = "$word";
+        }
+
+        $p = '/\b' . implode('|\b', $p) . "/i";
+        $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
+
+        return preg_replace($p, $s, $line);
     }
 
     function level($id, $ddc, $syw) {
