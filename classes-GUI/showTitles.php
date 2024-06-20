@@ -63,8 +63,7 @@ class showTitles {
 
     function against($words) {
         $words = preg_replace('/\s+/', ' +', " " . trim($words));
-        return $words;
-        
+        return $words;   
     }
 }
 

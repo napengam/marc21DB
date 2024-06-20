@@ -114,7 +114,7 @@ class titleData {
                 }
             }
         }
-  
+
 
         /*
          * ***********************************************
@@ -156,27 +156,12 @@ class titleData {
 
     function yellow($param, $name, $line) {
 
-
         $words = $param->search;
-        if (trim($words == '')) {
+        if (trim($param->search)=='' || $param->colname != $name) {
             return $line;
         }
-        if ($param->colname != $name) {
-            return $line;
-        }
-
-        $arr = explode('*', $words);
-        $words = implode('', $arr);
-        $arr = explode(' ', $words);
-
-        $p = [];
-        foreach ($arr as $word) {
-            $p[] = "$word";
-        }
-
-        $p = '/\b' . implode('|\b', $p) . "/i";
+        $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/i";
         $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
-
         return preg_replace($p, $s, $line);
     }
 
