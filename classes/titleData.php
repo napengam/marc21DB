@@ -31,7 +31,7 @@ class titleData {
          * Titel und zusatz
          * **********************************************
          */
-        $ti = $tm->title();
+        $ti = htmlentities($tm->title());
         $ti = $this->yellow($this->param, 'title', $ti);
         /*
          * ***********************************************
@@ -39,7 +39,7 @@ class titleData {
          * **********************************************
          */
 
-        $au = $tm->author();
+        $au = htmlentities($tm->author());
         $au = $this->yellow($this->param, 'autor', $au);
 
         $href = '';
@@ -64,26 +64,27 @@ class titleData {
          */
         $tmn = $tm->isbn();
         $tmn .= " " . $tm->price();
+        $tmn = htmlentities($tmn);
 
         /*
          * ***********************************************
          * DDC
          * **********************************************
          */
-        $ddc = $tm->ddc();
+        $ddc = htmlentities($tm->ddc());
 
         /*
          * ***********************************************
          * Verlagsort
          * **********************************************
          */
-        $vo = $tm->ort();
+        $vo = htmlentities($tm->ort());
         /*
          * ***********************************************
          * Verlag
          * **********************************************
          */
-        $vl = $tm->verlag();
+        $vl = htmlentities($tm->verlag());
         $vl = $this->yellow($this->param, 'verlag', $vl);
 
         /*
@@ -91,7 +92,7 @@ class titleData {
          * physical description
          * **********************************************
          */
-        $dc = $tm->physical();
+        $dc = htmlentities($tm->physical());
 
         /*
          * ***********************************************
@@ -157,7 +158,7 @@ class titleData {
     function yellow($param, $name, $line) {
 
         $words = $param->search;
-        if (trim($param->search)=='' || $param->colname != $name) {
+        if (trim($param->search) == '' || $param->colname != $name) {
             return $line;
         }
         $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/i";
