@@ -86,6 +86,10 @@ class isbdElements extends tags2mem {
             $vl .= $c . $x;
             $c = ', ';
             $x = $this->getData('264', 1, 'b');
+            $y = $this->getData('264', 1, 'c');
+            if ($y !== null) {
+                $x .= ' ' . $y;
+            }
         }
         return $vl;
     }

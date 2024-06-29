@@ -37,6 +37,8 @@ class insertSearch {
     }
 
     function rebuild() {
+        $r = $this->db->query("delete from table search");
+        
         $q = "select id from titles";
         $r = $this->db->query($q);
         $rows = $r->fetchAll();
@@ -46,9 +48,3 @@ class insertSearch {
         }
     }
 }
-//
-//include '../include/connect.inc.php';
-//include '../include/core.inc.php';
-//
-//$xx = new insertSearch($connect_pdo);
-//$xx->rebuild();

@@ -7,7 +7,7 @@ socket = socketWebClient(server, '/web');
 window.addEventListener('load', marc21DB.start, false);
 function marc21DBF() {
 
-    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null,searchVal,colname,
+    var sourceid, name, st, uuid = '', allids = [], lastTitleIn = null, searchVal, colname,
             tiCursor = {'max': 200, 'n': 0, 'start': 0, 'end': 200 - 1, 'total': 0, 'ids': []};
     function start() {
 
@@ -131,7 +131,7 @@ function marc21DBF() {
                 let obj = document.getElementById('ddc');
                 if (obj) {
                     obj.innerHTML = '';
-                }              
+                }
             }
         }
         lastTitleIn = null;
@@ -171,13 +171,13 @@ function marc21DBF() {
                 tiCursor.n = resPkg.ntitles;
                 tiCursor.end = tiCursor.start + tiCursor.n - 1;
                 if (obj) {
-                    obj.innerHTML = `Titel ${tiCursor.start + 1} bis ${tiCursor.end + 1} ${ddcText} `;
+                    obj.innerHTML = `Gesamt: ${allids.length}; Titel ${tiCursor.start + 1} bis ${tiCursor.end + 1} ${ddcText} `;
                 }
                 pagerOn();
             } else {
                 pagerOff();
                 if (obj) {
-                    obj.innerHTML = `Titel ${tiCursor.start + 1} bis ${resPkg.ntitles}  ${ddcText}`;
+                    obj.innerHTML = `Gesamt: ${allids.length}; Titel ${tiCursor.start + 1} bis ${resPkg.ntitles}  ${ddcText}`;
                 }
             }
             addShowHideClick();
@@ -357,7 +357,7 @@ function marc21DBF() {
                 break;
         }
         backend.callDirect('classes-GUI/showTitlesPaginate.php',
-                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor,'search': searchVal, 'colname': colname },
+                {'id': sourceid, 'ddc': ddc, 'uuid': uuid, 'cursor': tiCursor, 'search': searchVal, 'colname': colname},
                 (resPkg) => {
             let obj = document.getElementById('titles');
             if (obj) {
@@ -374,7 +374,7 @@ function marc21DBF() {
             util.mapFunctions(obj, '[data-funame]', marc21DB);
             obj = document.getElementById('filter');
             if (obj) {
-                obj.innerHTML = `Titel ${tiCursor.start + 1} bis ${tiCursor.end + 1}`;
+                obj.innerHTML = `Gesamt: ${allids.length};Titel ${tiCursor.start + 1} bis ${tiCursor.end + 1}`;
             }
             addShowHideClick();
         });
@@ -383,7 +383,7 @@ function marc21DBF() {
     function movePagination(dir) {
         tiCursor.start = tiCursor.start + tiCursor.max * dir;
         tiCursor.end = tiCursor.end + tiCursor.max * dir;
-        if (tiCursor.start <=0 ) {
+        if (tiCursor.start <= 0) {
             tiCursor.start = 0;
             tiCursor.end = Math.min(tiCursor.start + tiCursor.max, tiCursor.total);
             document.getElementById('prev').classList.add('is-hidden');

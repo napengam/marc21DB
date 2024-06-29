@@ -31,7 +31,7 @@ class titleData {
          * Titel und zusatz
          * **********************************************
          */
-        $ti = htmlentities($tm->title());
+        $ti = htmlspecialchars($tm->title());
         $ti = $this->yellow($this->param, 'title', $ti);
         /*
          * ***********************************************
@@ -39,7 +39,7 @@ class titleData {
          * **********************************************
          */
 
-        $au = htmlentities($tm->author());
+        $au = htmlspecialchars($tm->author());
         $au = $this->yellow($this->param, 'autor', $au);
 
         $href = '';
@@ -64,27 +64,27 @@ class titleData {
          */
         $tmn = $tm->isbn();
         $tmn .= " " . $tm->price();
-        $tmn = htmlentities($tmn);
+        $tmn = htmlspecialchars($tmn);
 
         /*
          * ***********************************************
          * DDC
          * **********************************************
          */
-        $ddc = htmlentities($tm->ddc());
+        $ddc = htmlspecialchars($tm->ddc());
 
         /*
          * ***********************************************
          * Verlagsort
          * **********************************************
          */
-        $vo = htmlentities($tm->ort());
+        $vo = htmlspecialchars($tm->ort());
         /*
          * ***********************************************
          * Verlag
          * **********************************************
          */
-        $vl = htmlentities($tm->verlag());
+        $vl = htmlspecialchars($tm->verlag());
         $vl = $this->yellow($this->param, 'verlag', $vl);
 
         /*
@@ -92,7 +92,7 @@ class titleData {
          * physical description
          * **********************************************
          */
-        $dc = htmlentities($tm->physical());
+        $dc = htmlspecialchars($tm->physical());
 
         /*
          * ***********************************************
@@ -118,7 +118,7 @@ class titleData {
 
 
         /*
-         * ***********************************************
+         * **********************************************
          * assemble title
          * **********************************************
          */
@@ -148,23 +148,30 @@ class titleData {
          */
         $syw = $tm->serie();
 
+        $sep = ';';
+        if (trim("$au$vo$vl") == '' && $dc === '') {
+            $sep = '';
+        }
+
+
         $title = "title='Alle Tags für diesen Titel zeigen'";
         $topLine = $this->level($titleid, $ddc, $syw);
-        $out = "$topLine<b>$ti</b>$au$vo $vl $dc$tmn$ix";
+        $out = "$topLine<b>$ti</b>$au$vo $vl$sep $dc$tmn$ix";
 
         return $out;
     }
 
     function yellow($param, $name, $line) {
 
+
         $words = $param->search;
         if (trim($param->search) == '' || $param->colname != $name) {
             return $line;
         }
-        $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/i";
+        $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/iu";
         $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
         return preg_replace($p, $s, $line);
-    }
+        }
 
     function level($id, $ddc, $syw) {
         $out = "
