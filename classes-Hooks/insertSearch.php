@@ -37,7 +37,7 @@ class insertSearch {
     }
 
     function rebuild() {
-        $r = $this->db->query("delete from table search");
+        $r = $this->db->query("delete from search");
         
         $q = "select id from titles";
         $r = $this->db->query($q);
