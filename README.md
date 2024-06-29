@@ -102,10 +102,10 @@ The GUI should come up and present you with the titles from the latest marc21 fi
 all the ddc found.   
 
 
-
-
 ## Full text search
 
 Column what in table search holds text of marc21 fields for title,author,publisher. 
-For this column a full text index is maintained allowing for fastt full text search with 
-titel or author od publisher.
+For this column a full text index is maintained allowing for fast full text search with 
+titel or author od publisher. 
+
+To delete and recreate the table and index call `` maintain/buildFullText.php ``
