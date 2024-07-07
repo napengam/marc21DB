@@ -16,7 +16,7 @@ class showDDC {
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
         $q = "select d.descript, t.ddc , count(t.ddc) as num from titles as t ,ddc as d  
-            where sourceid=? and d.ddc=t.ddc and d.isolang='de' group by ddc";
+            where sourceid=? and d.ddc=t.ddc and d.isolang='de' group by ddc order by ddc";
         $ttt = $connect_pdo->prepare($q);
         $ttt->execute([$this->param->id]);
         $rows = $ttt->fetchAll();
