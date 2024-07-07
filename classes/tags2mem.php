@@ -11,7 +11,7 @@ require_once '../include/connect.inc.php';
 
 class tags2mem {
 
-    private $db, $tags, $filter = '';
+    private $db, $tags, $tagIndex, $filter = '';
 
     function __construct($db) {
         $this->db = $db;
@@ -27,7 +27,8 @@ class tags2mem {
         if ($this->filter) {
             $tagFilter = " and tag in ($this->filter) ";
         }
-        $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed from tags where titleid='$titleid' $tagFilter ";
+        $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed 
+                from tags where titleid='$titleid' $tagFilter order by tag,seq,subfieldcode asc";
         $ta = $this->db->query($q);
         $this->tags = $ta->fetchAll();
 
@@ -43,21 +44,17 @@ class tags2mem {
 
         $this->tags[] = (object) ['tag' => 'A00', 'seq' => 1, 'indicator' => '',
                     'subfieldcode' => 'a', 'subfielddata' => $syw->syw, 'consumed' => 0];
-        /*
-         * ***********************************************
-         * sort for binary search to work
-         * **********************************************
-         */
-        usort($this->tags, [$this, "compare"]);
+
+        $this->tagIndex();
         return $this->tags;
     }
 
     function getData($tag, $seq, $code, $consumed = true) {
 
-        $p = $this->fast_in_array($this->tags, $tag);
-        if ($p === -1) {
-            return null; // no such tag
+        if (!isset($this->tagIndex[$tag])) {
+            return null;
         }
+        $p = $this->tagIndex[$tag];
 
         for (; $p < count($this->tags); $p++) {
             $aTag = $this->tags[$p];
@@ -78,49 +75,16 @@ class tags2mem {
         }
     }
 
-    private function fast_in_array($tags, $tag) {
-
-        if (strlen(trim($tag)) == 0) {
-            return -1;
-        }
-        $top = sizeof($tags) - 1;
-        $bot = 0;
-
-        while ($top >= $bot) {
-            $p = floor(($top + $bot) / 2);
-            if ($tags[$p]->tag < $tag) {
-                $bot = $p + 1;
-            } else if ($tags[$p]->tag > $tag) {
-                $top = $p - 1;
-            } else {
-                // go back to start of tag block
-                for ($p - 1; $p >= 0; $p--) {
-                    if ($tags[$p]->tag !== $tag) {
-                        $p++;
-                        break;
-                    }
-                }
-                return $p;
+    function tagIndex() {
+        $this->tagIndex = [];
+        $n = count($this->tags);
+        $refTag = '';
+        for ($i = 0; $i < $n; $i++) {
+            $aTag = $this->tags[$i]->tag;
+            if ($aTag !== $refTag) {
+                $this->tagIndex[$aTag] = $i;
+                $refTag = $aTag;
             }
         }
-        return -1;
-    }
-
-    private function compare($a, $b) {
-        if ($a->tag < $b->tag) {
-            return -1;
-        }
-        if ($a->tag > $b->tag) {
-            return 1;
-        }
-        if ($a->tag == $b->tag) {
-            if ($a->seq < $b->seq) {
-                return -1;
-            }
-            if ($a->seq > $b->seq) {
-                return 1;
-            }
-        }
-        return 0;
     }
 }
