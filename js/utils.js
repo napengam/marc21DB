@@ -51,7 +51,7 @@ function utils() {
             var funameList, // array of function names
                     eventList, // array of event names
                     funame; // a function name
-            eventList = element.dataset.event ? element.dataset.event.split(',') : [];
+            eventList = element.dataset.event ? element.dataset.event.split(',') : ['click'];
             funameList = element.dataset.funame ? element.dataset.funame.split(',') : [];
             while (eventList.length < funameList.length) {
                 eventList.push('click'); // default
