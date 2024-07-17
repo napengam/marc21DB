@@ -62,8 +62,12 @@ class showTitles {
     }
 
     function against($words) {
-        $words = preg_replace('/\s+/', ' +', " " . trim($words));
-        return $words;   
+        $words = trim($words);
+        $arr = str_word_count($words, 2);
+        if (count($arr) > 1) {
+            return '+' . implode(' +', $arr);
+        }
+        return $words;
     }
 }
 
