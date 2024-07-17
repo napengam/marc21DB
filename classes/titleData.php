@@ -31,7 +31,7 @@ class titleData {
          * Titel und zusatz
          * **********************************************
          */
-        $ti = htmlspecialchars($tm->title());
+        $ti = $this->lt($tm->title());
         $ti = $this->yellow($this->param, 'title', $ti);
         /*
          * ***********************************************
@@ -39,7 +39,7 @@ class titleData {
          * **********************************************
          */
 
-        $au = htmlspecialchars($tm->author());
+        $au = $this->lt($tm->author());
         $au = $this->yellow($this->param, 'autor', $au);
 
         $href = '';
@@ -64,27 +64,27 @@ class titleData {
          */
         $tmn = $tm->isbn();
         $tmn .= " " . $tm->price();
-        $tmn = htmlspecialchars($tmn);
+        $tmn = $this->lt($tmn);
 
         /*
          * ***********************************************
          * DDC
          * **********************************************
          */
-        $ddc = htmlspecialchars($tm->ddc());
+        $ddc = $this->lt($tm->ddc());
 
         /*
          * ***********************************************
          * Verlagsort
          * **********************************************
          */
-        $vo = htmlspecialchars($tm->ort());
+        $vo = $this->lt($tm->ort());
         /*
          * ***********************************************
          * Verlag
          * **********************************************
          */
-        $vl = htmlspecialchars($tm->verlag());
+        $vl = $this->lt($tm->verlag());
         $vl = $this->yellow($this->param, 'verlag', $vl);
 
         /*
@@ -92,7 +92,7 @@ class titleData {
          * physical description
          * **********************************************
          */
-        $dc = htmlspecialchars($tm->physical());
+        $dc = $this->lt($tm->physical());
 
         /*
          * ***********************************************
@@ -163,7 +163,6 @@ class titleData {
 
     function yellow($param, $name, $line) {
 
-
         $words = $param->search;
         if (trim($param->search) == '' || $param->colname != $name) {
             return $line;
@@ -171,7 +170,12 @@ class titleData {
         $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/iu";
         $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
         return preg_replace($p, $s, $line);
-        }
+    }
+
+    function lt($s) {
+
+        return preg_replace('/</', '&lt;', $s);
+    }
 
     function level($id, $ddc, $syw) {
         $out = "
