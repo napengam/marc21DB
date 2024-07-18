@@ -8,12 +8,13 @@ trait httpRequest {
     public $param;
 
     function readRequest() {
-        session_name('marc21DB');
-        session_start();
 
         $this->param = (object) [];
 
-        if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if (!session_name('marc21DB') ||
+                !session_start() ||
+                !isset($_SERVER['REQUEST_METHOD']) ||
+                $_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->param->error = 'Security Violation !!';
             echo $this->closeRequest($this->param);
             exit;
@@ -39,6 +40,6 @@ trait httpRequest {
     }
 
     function closeRequest($param) {
-        return json_encode($param);//, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+        return json_encode($param); //, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
     }
 }
