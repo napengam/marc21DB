@@ -9,32 +9,33 @@ class showTitles {
     use httpRequest;
 
     function __construct() {
-        global $connect_pdo, $Address;
+
         $this->readRequest();
         /*
          * ***********************************************
          * register with websocket for feedback
          * **********************************************
          */
-        $talk = new websocketPhp($Address . '/php');
+        $talk = new websocketPhp(GetAllConfig::load()['websocketserver']['adress'] . '/php');
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
+        $db = PDODB::getInstance('marc21');
 
-        $xx = new titleData($connect_pdo, $this->param);
+        $xx = new titleData($db, $this->param);
         if ($this->param->search !== '') {
             $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
-            $ttt = $connect_pdo->prepare($q);
-            $ttt->execute([$this->param->colname, $this->against($this->param->search)]);
+            $ttt = $db->prepare($q);
+            $rows = $db->query($ttt, [$this->param->colname, $this->against($this->param->search)]);
         } else if ($this->param->ddc !== '') {
             $q = "select id from titles where sourceid=? and ddc=?";
-            $ttt = $connect_pdo->prepare($q);
-            $ttt->execute([$this->param->id, $this->param->ddc]);
+            $ttt = $db->prepare($q);
+            $rows = $db->query($ttt, [$this->param->id, $this->param->ddc]);
         } else {
             $q = "select id from titles where sourceid=?";
-            $ttt = $connect_pdo->prepare($q);
-            $ttt->execute([$this->param->id]);
+            $ttt = $db->prepare($q);
+            $rows = $db->query($ttt, [$this->param->id]);
         }
-        $rows = $ttt->fetchAll();
+
         $res = $ids = [];
 
         $j = 0;

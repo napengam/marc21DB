@@ -1,7 +1,7 @@
 <?php
 
-require '../include/connect.inc.php';
-require '../include/core.inc.php';
+
+require_once '../include/core.inc.php';
 include '../include/adressPort.inc.php';
 
 class showDDC {
@@ -9,7 +9,7 @@ class showDDC {
     use httpRequest;
 
     function __construct() {
-        global $connect_pdo, $Address;
+        global $Address;
         $this->readRequest();
 
         $talk = new websocketPhp($Address . '/php');
@@ -17,14 +17,14 @@ class showDDC {
 
         $q = "select d.descript, t.ddc , count(t.ddc) as num from titles as t ,ddc as d  
             where sourceid=? and d.ddc=t.ddc and d.isolang='de' group by ddc order by ddc";
-        $ttt = $connect_pdo->prepare($q);
-        $ttt->execute([$this->param->id]);
-        $rows = $ttt->fetchAll();
+        $db = PDODB::getInstance('marc21');
+        $ttt = $db->prepare($q);
+        $rows = $db->query($ttt, [$this->param->id]);
         $out = [];
 
         $talk->feedback("Erstelle Facette DDC");
-       $out[] = "<div id='ddcover' class='scroller' >";
-        $out[] = "<table id='ddctable' class='table is-size-7'>"
+        $out[] = "<div id='ddcover' class='scroller' >";
+        $out[] = "<table id='ddctable' class='table is-size-7 is-hoverable'>"
                 . "<thead style='background-color:white'>"
                 . "<tr><th>DDC</th><th>Anzahl</th><th>Beschreibung</th></tr>"
                 . "</thead>";

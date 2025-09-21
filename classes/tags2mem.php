@@ -7,14 +7,12 @@
  * **********************************************
  */
 
-require_once '../include/connect.inc.php';
-
 class tags2mem {
 
     private $db, $tags, $tagIndex, $filter = '';
 
     function __construct($db) {
-        $this->db = $db;
+        $this->db = PDODB::getInstance('marc21');
     }
 
     function setFilter($filter) {
@@ -29,8 +27,7 @@ class tags2mem {
         }
         $q = "select tag,seq,indicator,subfieldcode,subfielddata, 0 as consumed 
                 from tags where titleid='$titleid' $tagFilter order by tag,seq,subfieldcode asc";
-        $ta = $this->db->query($q);
-        $this->tags = $ta->fetchAll();
+        $this->tags = $this->db->query($q);
 
         /*
          * ***********************************************
@@ -39,11 +36,10 @@ class tags2mem {
          */
 
         $q = "select substring(file,1,5) as syw from sources where id=(select sourceid from titles where id='$titleid')";
-        $ss = $this->db->query($q);
-        $syw = $ss->fetch();
+        $syw = $this->db->query($q);
 
         $this->tags[] = (object) ['tag' => 'A00', 'seq' => 1, 'indicator' => '',
-                    'subfieldcode' => 'a', 'subfielddata' => $syw->syw, 'consumed' => 0];
+                    'subfieldcode' => 'a', 'subfielddata' => $syw[0]->syw, 'consumed' => 0];
 
         $this->tagIndex();
         return $this->tags;

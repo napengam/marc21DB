@@ -5,7 +5,8 @@ class marc21toDB extends marc21 {
     private $insertTags = "insert into tags (titleid,tag,seq,indicator,subfieldcode,subfielddata) values ",
             $insertTitles = "insert into titles (sourceid,offset) values (?,?)",
             $insertSources = "insert into sources (path,file) values (?,?) ON DUPLICATE KEY UPDATE file=file",
-            $block = true, $db, $insT, $insS, $sourceid;
+            $block = true, $db, $insT, $insS, $sourceid,
+            $allTags = null;
     public $hook;
 
     function __construct($db) {
@@ -57,7 +58,7 @@ class marc21toDB extends marc21 {
         $go = false;
         if (is_callable([$this->hook, 'hookAfterTitleInsert'])) {
             $go = true;
-            $allTags = new isbdElements($this->db);
+            $this->allTags = $this->allTags ?? $this->allTags = new isbdElements($this->db);
         }
 
         $placeh = "(?,?,?,?,?,?)";
@@ -81,8 +82,8 @@ class marc21toDB extends marc21 {
             $ins = $this->db->prepare($query);
             $ins->execute($values);
             if ($go) {
-                $allTags->getAllTags($titleid);
-                $this->hook->hookAfterTitleInsert($titleid, $allTags);
+                $this->allTags->getAllTags($titleid);
+                $this->hook->hookAfterTitleInsert($titleid, $this->allTags);
             }
         }
     }

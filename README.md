@@ -1,5 +1,5 @@
 
-## Load an view MARC21-Files retreived from ##
+## Load and view MARC21-Files retreived from ##
 ## Deutsche National Bibliothek DNB ##
 
 
