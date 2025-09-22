@@ -1,7 +1,6 @@
 <?php
-require 'include/connect.inc.php';
+
 require 'include/core.inc.php';
-require 'include/adressPort.inc.php';
 
 // Generate a CSRF token
 $csfr = bin2hex(random_bytes(32));
@@ -35,12 +34,13 @@ echo '<div class="columns">
 
 $pg->closeContainer();
 
+$Adress = GetAllConfig::load()['websocketserver']['adress'];
+
 echo
 "<script>
-var server='$Address';
+var server='$Adress';
 var csfr='$csfr';    
 </script>";
-
 ?>
 
 <script src="js/utils.js"></script>
@@ -55,6 +55,7 @@ var csfr='$csfr';
 <script src="js21/marc21DB.js"></script>
 
 <?php
+
 $pg->footer();
 $pg->closePage();
 

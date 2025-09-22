@@ -1,6 +1,5 @@
 <?php
 
-require '../include/connect.inc.php';
 require '../include/core.inc.php';
 
 $opt = new getOptions(['-y', '-w', '-s', '-f']);

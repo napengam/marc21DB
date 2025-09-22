@@ -1,6 +1,6 @@
 <?php
 
-require_once '../include/connect.inc.php';
+
 require '../include/core.inc.php';
 
 class showAllTags {
@@ -8,10 +8,10 @@ class showAllTags {
     use httpRequest;
 
     function __construct() {
-        global $connect_pdo;
+        
 
         $titleid = $_GET['titleid'];
-        $ta = new tags2mem($connect_pdo);
+        $ta = new tags2mem();
         $tags = $ta->setTags($titleid);
         /*
          * ***********************************************

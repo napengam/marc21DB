@@ -9,18 +9,18 @@ class showTitles {
     use httpRequest;
 
     function __construct() {
-        global $connect_pdo, $Address;
         $this->readRequest();
         /*
          * ***********************************************
          * register with websocket for feedback
          * **********************************************
          */
-        $talk = new websocketPhp($Address . '/php');
+        $Adress=GetAllConfig::load()['websocketserver']['adress'];
+        $talk = new websocketPhp($Adress . '/php');
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
 
-        $xx = new titleData($connect_pdo,$this->param);
+        $xx = new titleData($this->param);
 
         if (count($this->param->cursor['ids']) == 0) {
             echo $this->closeRequest($this->param);

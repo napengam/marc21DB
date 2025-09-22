@@ -1,8 +1,5 @@
 <?php
-
-require '../include/connect.inc.php';
 require '../include/core.inc.php';
-include '../include/adressPort.inc.php';
 
 class showTitles {
 
@@ -21,7 +18,7 @@ class showTitles {
 
         $db = PDODB::getInstance('marc21');
 
-        $xx = new titleData($db, $this->param);
+        $xx = new titleData( $this->param);
         if ($this->param->search !== '') {
             $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
             $ttt = $db->prepare($q);

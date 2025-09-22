@@ -8,8 +8,8 @@
  */
 class isbdElements extends tags2mem {
 
-    function __construct($db) {
-        parent::__construct($db);
+    function __construct() {
+        parent::__construct();
     }
 
     function getAllTags($titleid) {

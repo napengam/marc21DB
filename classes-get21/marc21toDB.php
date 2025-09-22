@@ -9,8 +9,8 @@ class marc21toDB extends marc21 {
             $allTags = null;
     public $hook;
 
-    function __construct($db) {
-        $this->db = $db;
+    function __construct() {
+        $this->db = PDODB::getInstance('marc21');
     }
 
     function readFile($m21File) {
@@ -27,23 +27,21 @@ class marc21toDB extends marc21 {
     public function fileExists($m21File) {
         $pi = (object) pathinfo($m21File);
         $q = "select id from sources where path=? and file=?";
-        $ex = $this->db->prepare($q);
-        $ex->execute([$pi->dirname, $pi->basename]);
-        return $ex->rowCount();
+        $this->db->query($q, [$pi->dirname, $pi->basename]);
+        return $this->db->rowCount();
     }
 
     public function fileDelete($m21File) {
         $pi = (object) pathinfo($m21File);
         $q = "delete from sources where path=? and file=?";
-        $ex = $this->db->prepare($q);
-        $ex->execute([$pi->dirname, $pi->basename]);
-        return $ex->rowCount();
+        $this->db->query($q, [$pi->dirname, $pi->basename]);
+        return $$this->db->rowCount();
     }
 
     private function insertSource($m21File) {
         $pi = (object) pathinfo($m21File);
-        $this->insS->execute([$pi->dirname, $pi->basename]);
-        if ($this->insS->rowCount() !== 1) {
+        $this->db->query($this->insS, [$pi->dirname, $pi->basename]);
+        if ($this->db->rowCount() !== 1) {
             $this->block = true;
             return false;
         }
@@ -63,7 +61,7 @@ class marc21toDB extends marc21 {
 
         $placeh = "(?,?,?,?,?,?)";
         while (($tags = $this->decodeRecord()) !== NULL) {
-            $this->insT->execute([$this->sourceid, $this->recordOffset]);
+            $this->db->query($this->insT, [$this->sourceid, $this->recordOffset]);
             $titleid = $this->db->lastInsertId();
             $tn = 0;
             $values = [];
@@ -79,8 +77,8 @@ class marc21toDB extends marc21 {
                 }
             }
             $query = $this->insertTags . implode(',', array_fill(0, $tn, $placeh));
-            $ins = $this->db->prepare($query);
-            $ins->execute($values);
+            $this->db->query($query, $values);
+
             if ($go) {
                 $this->allTags->getAllTags($titleid);
                 $this->hook->hookAfterTitleInsert($titleid, $this->allTags);

@@ -1,18 +1,17 @@
 <?php
 
-require '../include/connect.inc.php';
+
 require '../include/core.inc.php';
-include '../include/adressPort.inc.php';
 
 class showDDC {
 
     use httpRequest;
 
     function __construct() {
-        global $connect_pdo, $Address;
+       
         $this->readRequest();
 
-        $talk = new websocketPhp($Address . '/php');
+        $talk = new websocketPhp(GetAllConfig::load()['websocketserver']['adress'] . '/php');
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
         $qs = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
@@ -20,9 +19,8 @@ class showDDC {
         $q = "select d.descript, t.ddc , count(t.ddc) as num from titles as t ,ddc as d  
             where  d.ddc=t.ddc and d.isolang='de' and t.id in ($qs)  group by ddc";
 
-        $ttt = $connect_pdo->prepare($q);
-        $ttt->execute([$this->param->colname, $this->param->search]);
-        $rows = $ttt->fetchAll();
+        $rows = PDODB::getInstance('marc21')->query($q,[$this->param->colname, $this->param->search]);
+       
         $out = [];
 
         $talk->feedback("Erstelle Facette DDC");

@@ -11,7 +11,7 @@ class tags2mem {
 
     private $db, $tags, $tagIndex, $filter = '';
 
-    function __construct($db) {
+    function __construct() {
         $this->db = PDODB::getInstance('marc21');
     }
 

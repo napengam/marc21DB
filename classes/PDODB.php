@@ -140,6 +140,10 @@ class PDODB {
         return $record;
     }
 
+    public function rowCount() {
+        return $this->rowCount;
+    }
+
     public function lastInsertId() {
         return $this->pdo->lastInsertId();
     }

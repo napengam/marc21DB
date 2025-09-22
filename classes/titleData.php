@@ -1,14 +1,11 @@
 <?php
 
-require '../include/connect.inc.php';
-require 'tags2mem.php';
-
 class titleData {
 
     private $tm, $param;
 
-    function __construct($db, $param) {
-        $this->tm = new isbdElements($db);
+    function __construct($param) {
+        $this->tm = new isbdElements();
         $this->param = $param;
     }
 
@@ -163,8 +160,9 @@ class titleData {
 
     function yellow($param, $name, $line) {
 
-        $words = $param->search;
-        if (trim($param->search) == '' || $param->colname != $name) {
+        $words = $param->search ?? '';
+
+        if (trim($words) == '' || $param->colname != $name) {
             return $line;
         }
         $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/iu";
