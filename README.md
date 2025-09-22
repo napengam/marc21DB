@@ -56,11 +56,11 @@ This will create a database
 
 ### Step 2
 
-In the directory **marc21DB/include** edit the file **connect.inc.php** in order to set
+In the directory **marc21DB/config** copy the file **config_example.ini** to **config.ini in order to set
 the neccessary _dbname_ , _user_ and _password_ for your database.   
 
-File **adressPort.inc.php** keeps adress of a websocket server to allow the backend to send feedback to the client
-If you are not using my [phpWebsocketServer](https://github.com/napengam/phpWebSocketServer) do not set **$Address** in there, 
+If you are using my [phpWebsocketServer](https://github.com/napengam/phpWebSocketServer) set  **address** 
+in section websocketserver else do not assign a value;
 
 In the include Directory run   
 
