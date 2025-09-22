@@ -35,7 +35,7 @@ class marc21toDB extends marc21 {
         $pi = (object) pathinfo($m21File);
         $q = "delete from sources where path=? and file=?";
         $this->db->query($q, [$pi->dirname, $pi->basename]);
-        return $$this->db->rowCount();
+        return $this->db->rowCount();
     }
 
     private function insertSource($m21File) {

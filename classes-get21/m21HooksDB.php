@@ -2,14 +2,14 @@
 
 class m21HooksDB {
 
-    private $updateddc, $search;
+    private $db, $updateddc, $search;
 
     function __construct() {
-        global $connect_pdo;
+        $this->db = PDODB::getInstance('marc21');
         $q = "update titles set ddc=? where id=?";
-        $this->updateddc = $connect_pdo->prepare($q);
+        $this->updateddc = $this->db->prepare($q);
         // fill full text index
-        $this->search = new insertSearch($connect_pdo);
+        $this->search = new insertSearch($this->db);
     }
 
     public function hookAfterTitleInsert($id, $tags) {
@@ -21,7 +21,7 @@ class m21HooksDB {
          */
         $ddc = $tags->ddc();
         echo "$id / $ddc \r\n";
-        $this->updateddc->execute([$ddc, $id]);
+        $this->db->query($this->updateddc, [$ddc, $id]);
         $this->search->insert($id);
     }
 }

@@ -37,7 +37,7 @@ if (($y && $w && $s) === false) {
 
 $serie = mb_str_split($s);
 $sftp = new sftpDownload();
-$m21 = new marc21toDB($connect_pdo);
+$m21 = new marc21toDB();
 $h = new m21HooksDB();
 
 foreach ($serie as $s1) {

@@ -14,7 +14,7 @@ class insertSearch {
     function __construct($db) {
         $this->db = PDODB::getInstance('marc21');
         $q = "insert into search (titleid,colname,what) values (?,?,?)";
-        $this->insert = $db->prepare($q);
+        $this->insert = $this->db->prepare($q);
         $this->isbd = new isbdElements($db);
     }
 

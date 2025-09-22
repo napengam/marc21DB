@@ -1,6 +1,6 @@
 <?php
 
-class sftpDownLoad {
+class sftpDownload {
 
     public $error = '';
 
@@ -9,7 +9,7 @@ class sftpDownLoad {
         if (file_exists($ftpFileDir . $file)) {
             return $ftpFileDir . $file;
         }
-       
+
         $content = file_get_contents("https://data.dnb.de/DNBlfdMarc21/$file");
         if (!$content) {
             return false;

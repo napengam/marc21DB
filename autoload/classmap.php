@@ -1,7 +1,7 @@
 <?php
 
 // Auto-generated class map. Do not edit manually.
-// Generated on: 2025-09-21 17:34:20
+// Generated on: 2025-09-22 10:56:42
 
 return array (
   'ErrorHandler' => 'F:/laragon/www/marc21DB//classes/ErrorHandler.php',
@@ -16,7 +16,7 @@ return array (
   'marc21' => 'F:/laragon/www/marc21DB//classes-get21/marc21.php',
   'marc21toDB' => 'F:/laragon/www/marc21DB//classes-get21/marc21toDB.php',
   'page' => 'F:/laragon/www/marc21DB//classes/page.php',
-  'sftpDownLoad' => 'F:/laragon/www/marc21DB//classes-get21/sftpDownload.php',
+  'sftpDownload' => 'F:/laragon/www/marc21DB//classes-get21/sftpDownload.php',
   'showAllTags' => 'F:/laragon/www/marc21DB//classes-GUI/showAllTags.php',
   'showBookContent' => 'F:/laragon/www/marc21DB//classes-GUI/showBookContent.php',
   'showDDC' => 'F:/laragon/www/marc21DB//classes-GUI/showSearchDDC.php',

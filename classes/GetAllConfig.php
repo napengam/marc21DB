@@ -67,6 +67,11 @@ class GetAllConfig {
     }
 
     private static function getProjectUrl($project) {
+        if (php_sapi_name() === 'cli' || defined('STDIN')) {
+            // In CLI: return a filesystem path instead of URL
+            return getenv('APP_BASE_URL') ?: "http://localhost/$project/";
+        }
+
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? "https://" : "http://";
 
         $host = $_SERVER['HTTP_HOST'];         // e.g., www.example.com

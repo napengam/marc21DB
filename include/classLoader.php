@@ -28,6 +28,9 @@ class ClassLoader {
 
         // Register autoloader
         spl_autoload_register(function ($class) use ($basePath, $paths, &$classMap, $classMapFile) {
+
+            $a = isset($classMap[$class]);
+            $b = file_exists($classMap[$class]);
             if (isset($classMap[$class]) && file_exists($classMap[$class])) {
                 require_once $classMap[$class];
                 return;
