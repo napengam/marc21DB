@@ -1,17 +1,14 @@
 <?php
 
-
 require_once '../include/core.inc.php';
-include '../include/adressPort.inc.php';
 
 class showDDC {
 
     use httpRequest;
 
     function __construct() {
-        global $Address;
         $this->readRequest();
-
+        $Adress = GetAllConfig::load()['websocketserver']['adress'];
         $talk = new websocketPhp($Address . '/php');
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 

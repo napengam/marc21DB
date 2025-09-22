@@ -1,8 +1,7 @@
 <?php
 
-require '../include/connect.inc.php';
+
 require '../include/core.inc.php';
-include '../include/adressPort.inc.php';
 
 class showTitles {
 
