@@ -1,4 +1,5 @@
 <?php
+
 require '../include/core.inc.php';
 
 class showTitles {
@@ -18,7 +19,7 @@ class showTitles {
 
         $db = PDODB::getInstance('marc21');
 
-        $xx = new titleData( $this->param);
+        $xx = new titleData($this->param);
         if ($this->param->search !== '') {
             $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
             $ttt = $db->prepare($q);
@@ -59,13 +60,27 @@ class showTitles {
         echo $this->closeRequest($this->param);
     }
 
-    function against($words) {
+    function against(string $words): string {
         $words = trim($words);
-        $arr = str_word_count($words, 2);
-        if (count($arr) > 1) {
-            return '+' . implode(' +', $arr);
+
+        // Unicode-safe word extraction
+        preg_match_all('/[\p{L}\p{N}_\*]+/u', $words, $matches);
+        $arr = $matches[0];
+
+        $cleaned = array_map(function ($w) {
+            // Remove leading stars, allow trailing
+            $w = preg_replace('/^\*+/', '', $w);
+            // Collapse multiple trailing stars into one
+            $w = preg_replace('/\*+$/', '*', $w);
+            return $w;
+        }, $arr);
+
+        // Build boolean query
+        if (count($cleaned) > 1) {
+            return '+' . implode(' +', $cleaned);
         }
-        return $words;
+
+        return $cleaned[0] ?? '';
     }
 }
 

@@ -9,7 +9,7 @@ class showDDC {
     function __construct() {
         $this->readRequest();
         $Adress = GetAllConfig::load()['websocketserver']['adress'];
-        $talk = new websocketPhp($Address . '/php');
+        $talk = new websocketPhp($Adress . '/php');
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
         $q = "select d.descript, t.ddc , count(t.ddc) as num from titles as t ,ddc as d  

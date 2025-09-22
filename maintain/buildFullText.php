@@ -2,5 +2,5 @@
 
 require '../include/core.inc.php';
 
-$ins=new insertSearch($connect_pdo);
+$ins = new insertSearch('');
 $ins->rebuild();

@@ -105,7 +105,7 @@ class titleData {
             $href = $o['h'];
             if ($x) {
                 $pu = parse_url($href);
-                if (strpos($pu['host'], 'deposit') !== false) {
+                if (strpos($pu['host'] ?? '', 'deposit') !== false) {
                     $ix .= "$x  <a href='$href' target='nn' data-what='$x'  data-funame='marc21DB.showBookContent'> <i class='fa-solid fa-bars'></i></a> ";
                 } else {
                     $ix .= "$x  <a href='$href' target='nn' > <i class='fa-solid fa-bars'></i></a> ";
@@ -158,16 +158,29 @@ class titleData {
         return $out;
     }
 
-    function yellow($param, $name, $line) {
+   
 
+    function yellow($param, $name, $line) {
         $words = $param->search ?? '';
 
         if (trim($words) == '' || $param->colname != $name) {
             return $line;
         }
-        $p = '/\b' . preg_replace('/\s+/', '|\b', $words) . "/iu";
-        $s = "<span style='background-color:yellow'>" . '$0' . "</span>";
-        return preg_replace($p, $s, $line);
+        $words = preg_replace('/^\*+|\*+$/u', '', $words);
+        $out = [];
+
+        $p = mb_stripos($line, $words, 0);
+        $l = mb_strlen($words);
+        if ($p === false) {
+            return $line;
+        }
+        $out[] = mb_substr($line, 0, $p);
+        $out[] = "<span style='background-color:yellow'>";
+        $out[] = mb_substr($line, $p, $l);
+        $out[] = "</span>";
+        $out[] = mb_substr($line, $p + $l);
+
+        return implode('', $out);
     }
 
     function lt($s) {

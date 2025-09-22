@@ -28,7 +28,7 @@ trait httpRequest {
         } else {
             // Check Content-Type for JSON
             if (!empty($_SERVER['CONTENT_TYPE']) &&
-                stripos($_SERVER['CONTENT_TYPE'], 'application/json') === false) {
+                    stripos($_SERVER['CONTENT_TYPE'], 'application/json') === false) {
                 http_response_code(415); // Unsupported Media Type
                 $this->param->error = 'Invalid content type. Expected application/json.';
                 echo $this->closeRequest($this->param);
@@ -82,6 +82,6 @@ trait httpRequest {
             $param->result = '';
         }
         unset($_POST, $_GET);
-        return json_encode($param, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+        return json_encode($param, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK | JSON_INVALID_UTF8_IGNORE);
     }
 }
