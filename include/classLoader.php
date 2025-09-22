@@ -151,5 +151,3 @@ $paths = [
 ];
 
 ClassLoader::load('marc21DB', $paths);
-//ErrorHandler::register();
-//require_once 'config.inc.php';
