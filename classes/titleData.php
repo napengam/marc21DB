@@ -158,14 +158,17 @@ class titleData {
         return $out;
     }
 
-   
-
     function yellow($param, $name, $line) {
         $words = $param->search ?? '';
 
         if (trim($words) == '' || $param->colname != $name) {
             return $line;
         }
+        /*
+         * ***********************************************
+         * highlight first occurens of word
+         * **********************************************
+         */
         $words = preg_replace('/^\*+|\*+$/u', '', $words);
         $out = [];
 
