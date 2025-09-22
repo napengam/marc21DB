@@ -45,7 +45,7 @@ CREATE TABLE `search` (
   `titleid` int NOT NULL,
   `colname` char(16) COLLATE utf8mb4_general_ci NOT NULL,
   `what` text CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 -- --------------------------------------------------------
 
