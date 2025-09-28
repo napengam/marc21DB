@@ -139,7 +139,7 @@ class ClassLoader {
 
 /*
  * ***********************************************
- * where to look below spvgg for class files
+ * where to look below  for class files
  * **********************************************
  */
 
@@ -150,4 +150,21 @@ $paths = [
     '/classes-Hooks/'
 ];
 
-ClassLoader::load('marc21DB', $paths);
+$projectDir = getFirstDirUnderDocroot();
+define('PROJECT_DIR', $projectDir);
+
+ClassLoader::load(PROJECT_DIR, $paths);
+
+function getFirstDirUnderDocroot(): ?string {
+    $docRoot = realpath($_SERVER['DOCUMENT_ROOT']);  
+    $current = realpath(__DIR__);                   
+
+    if (strpos($current, $docRoot) !== 0) {
+        return null; // not under docroot
+    }
+
+    $relative = ltrim(str_replace($docRoot, '', $current), DIRECTORY_SEPARATOR);
+    $parts = explode(DIRECTORY_SEPARATOR, $relative);
+
+    return $parts[0] ?? null;  // first dir after docroot
+}
