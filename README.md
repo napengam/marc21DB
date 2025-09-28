@@ -56,7 +56,7 @@ This will create a database
 
 ### Step 2
 
-In the directory **marc21DB/config** copy the file **config_example.ini** to **config.ini in order to set
+In the directory **marc21DB/config** copy the file **config_example.ini** to **config.ini** in order to set
 the neccessary _dbname_ , _user_ and _password_ for your database.   
 
 If you are using my [phpWebsocketServer](https://github.com/napengam/phpWebSocketServer) set  **address** 
