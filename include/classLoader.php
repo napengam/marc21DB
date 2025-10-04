@@ -150,21 +150,7 @@ $paths = [
     '/classes-Hooks/'
 ];
 
-$projectDir = getFirstDirUnderDocroot();
-define('PROJECT_DIR', $projectDir);
 
-ClassLoader::load(PROJECT_DIR, $paths);
+define('PROJECT_DIR', 'marc21DB');
+ClassLoader::load('marc21DB', $paths);
 
-function getFirstDirUnderDocroot(): ?string {
-    $docRoot = realpath($_SERVER['DOCUMENT_ROOT']);  
-    $current = realpath(__DIR__);                   
-
-    if (strpos($current, $docRoot) !== 0) {
-        return null; // not under docroot
-    }
-
-    $relative = ltrim(str_replace($docRoot, '', $current), DIRECTORY_SEPARATOR);
-    $parts = explode(DIRECTORY_SEPARATOR, $relative);
-
-    return $parts[0] ?? null;  // first dir after docroot
-}
