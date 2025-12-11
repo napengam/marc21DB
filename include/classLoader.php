@@ -1,13 +1,29 @@
 <?php
 
 /**
- * Dynamically loads classes from specified directories.
- * Builds and updates class map when missing classes are found.
- * 
- * @requires explicit $paths input
+ * ClassLoader
+ * ------------
+ * Unified autoloader + router helper.
+ *
+ * Generates one file: /autoload/autoload_map.php
+ * Structure:
+ *   [
+ *     'classes' => [ className => ['file' => ..., 'mtime' => ...] ],
+ *     
+ *     'routes'  => [ shortClassName => filePath ]
+ *   ]
  */
 class ClassLoader {
 
+    /** Unified in-memory cache of the loaded map */
+    private static array $mapCache = [];
+    private static string $basePath;
+    private static array $paths;
+    private static string $mapFile;
+
+    /**
+     * Initialize the autoloader.
+     */
     public static function load(string $projectFolder, array $paths): void {
         $baseDir = dirname(__DIR__);
         $basePath = self::findBasePath($baseDir, $projectFolder);
@@ -17,68 +33,106 @@ class ClassLoader {
         }
 
         $autoloadDir = $basePath . '/autoload';
-        $classMapFile = $autoloadDir . '/classmap.php';
+        $mapFile = $autoloadDir . '/autoload_map.php';
+
+        self::$basePath = $basePath;
+        self::$paths = $paths;
+        self::$mapFile = $basePath . '/autoload/autoload_map.php';
 
         if (!is_dir($autoloadDir)) {
             mkdir($autoloadDir, 0775, true);
         }
 
-        // Load or create class map
-        $classMap = file_exists($classMapFile) ? require $classMapFile : self::fillClassMapOnce($basePath, $paths, $classMapFile);
+        // Load or build unified map
+        $map = is_file($mapFile) ? require $mapFile : self::buildAutoloadMap($basePath, $paths, $mapFile);
 
-        // Register autoloader
-        spl_autoload_register(function ($class) use ($basePath, $paths, &$classMap, $classMapFile) {
+        self::$mapCache = $map;
+        $classMap = $map['classes'];
 
-            $a = isset($classMap[$class]);
-            $b = file_exists($classMap[$class]);
-            if (isset($classMap[$class]) && file_exists($classMap[$class])) {
-                require_once $classMap[$class];
+        // Register PSR-like autoloader
+        spl_autoload_register(function ($class) use (&$classMap, $basePath, $paths, $mapFile) {
+            $entry = $classMap[$class] ?? null;
+
+            if ($entry && is_file($entry['file'])) {
+                if (filemtime($entry['file']) === $entry['mtime']) {
+                    require_once $entry['file'];
+                    return;
+                }
+            }
+
+            // Rebuild map if missing/outdated
+            $map = self::buildAutoloadMap($basePath, $paths, $mapFile);
+            self::$mapCache = $map;
+            $classMap = $map['classes'];
+
+            $entry = $classMap[$class] ?? null;
+            if ($entry && is_file($entry['file'])) {
+                require_once $entry['file'];
                 return;
             }
 
-            $classMap = self::fillClassMapOnce($basePath, $paths, $classMapFile);
-            if (isset($classMap[$class])) {
-                require_once $classMap[$class];
-                return;
-            }
-            throw new Exception("Class $class not found.");
+            throw new Exception("Class '{$class}' not found or outdated.");
         });
     }
 
-    private static function fillClassMapOnce(string $basePath, array $paths, string $classMapFile): array {
-        $classMap = [];
+    /**
+     * Build unified map and write to disk.
+     */
+    private static function buildAutoloadMap(string $basePath, array $paths, string $mapFile): array {
+        $classes = [];
+        $routes = [];
 
         foreach ($paths as $path) {
-            $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator("$basePath/$path"));
+            $rii = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator("$basePath/$path", FilesystemIterator::SKIP_DOTS)
+            );
+
             foreach ($rii as $file) {
                 if (!$file->isFile() || $file->getExtension() !== 'php') {
                     continue;
                 }
-                $defs = self::getDefinitions($file->getPathname());
+
+                $filePath = str_replace('\\', '/', $file->getPathname());
+                $defs = self::extractDefinitions($filePath);
+
                 foreach ($defs as $def) {
-                    $classMap[$def] = str_replace('\\', '/', $file->getPathname());
+                    $classes[$def] = [
+                        'file' => $filePath,
+                        'mtime' => filemtime($filePath),
+                    ];
+
+                    // Router: store naked class name as key
+                    $short = basename(str_replace('\\', '/', $def));
+                    if (strpos($filePath, '/GUI/') !== false || strpos($filePath, '/Api/') !== false) {
+                        $routes[$short] = $filePath;
+                    }
                 }
             }
         }
-        ksort($classMap);
 
-        file_put_contents($classMapFile, "<?php\n\n" .
-                "// Auto-generated class map. Do not edit manually.\n" .
-                "// Generated on: " . date('Y-m-d H:i:s') . "\n\n" .
-                "return " . var_export($classMap, true) . ";\n");
+        ksort($classes);
+        ksort($routes);
 
-        return $classMap;
+        $data = [
+            'classes' => $classes,
+            'routes' => $routes,
+        ];
+
+        self::writeMapFile($mapFile, $data);
+        return $data;
     }
 
-    private static function getDefinitions(string $file): array {
+    /**
+     * Extracts PHP class/interface/trait names from a file.
+     */
+    private static function extractDefinitions(string $file): array {
         if (!is_file($file) || pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
             return [];
         }
 
         $contents = file_get_contents($file);
         $tokens = token_get_all($contents);
-
-        $definitions = [];
+        $defs = [];
         $namespace = '';
 
         for ($i = 0; $i < count($tokens); $i++) {
@@ -90,7 +144,8 @@ class ClassLoader {
             if ($tokens[$i][0] === T_NAMESPACE) {
                 $namespace = '';
                 for ($j = $i + 1; $j < count($tokens); $j++) {
-                    if (is_array($tokens[$j]) && ($tokens[$j][0] === T_STRING || $tokens[$j][0] === T_NAME_QUALIFIED)) {
+                    if (is_array($tokens[$j]) &&
+                            ($tokens[$j][0] === T_STRING || $tokens[$j][0] === T_NAME_QUALIFIED)) {
                         $namespace .= $tokens[$j][1];
                     } elseif ($tokens[$j] === ';' || $tokens[$j] === '{') {
                         break;
@@ -98,30 +153,42 @@ class ClassLoader {
                 }
             }
 
-            // Detect class/interface/trait
+            // Capture class/interface/trait
             if (in_array($tokens[$i][0], [T_CLASS, T_INTERFACE, T_TRAIT], true)) {
-                // Skip anonymous classes
-                if ($tokens[$i][0] === T_CLASS) {
-                    $prev = $tokens[$i - 1] ?? null;
-                    if (is_array($prev) && $prev[0] === T_NEW) {
-                        continue;
-                    }
+                $prev = $tokens[$i - 1] ?? null;
+                if ($tokens[$i][0] === T_CLASS && is_array($prev) && $prev[0] === T_NEW) {
+                    continue; // Skip anonymous
                 }
 
-                // Next T_STRING is the name
                 for ($j = $i + 1; $j < count($tokens); $j++) {
                     if (is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
                         $name = $tokens[$j][1];
-                        $definitions[] = ($namespace ? $namespace . '\\' : '') . $name;
+                        $defs[] = ($namespace ? $namespace . '\\' : '') . $name;
                         break;
                     }
                 }
             }
         }
 
-        return $definitions;
+        return $defs;
     }
 
+    /**
+     * Writes the unified autoload map file.
+     */
+    private static function writeMapFile(string $file, array $data): void {
+        file_put_contents(
+                $file,
+                "<?php\n\n" .
+                "// Auto-generated combined autoload map. Do not edit manually.\n" .
+                "// Generated on: " . date('Y-m-d H:i:s') . "\n\n" .
+                "return " . var_export($data, true) . ";\n"
+        );
+    }
+
+    /**
+     * Finds the base project directory by folder name.
+     */
     private static function findBasePath(string $startPath, string $targetFolder): ?string {
         $parts = explode(DIRECTORY_SEPARATOR, $startPath);
         $path = [];
@@ -135,6 +202,49 @@ class ClassLoader {
 
         return null;
     }
+
+    // -------------------------------
+    // 🔹 Public helper methods
+    // -------------------------------
+
+    public static function getMap(): array {
+        return self::$mapCache;
+    }
+
+    public static function getRoutes(): array {
+        return self::$mapCache['routes'] ?? [];
+    }
+
+    public static function getFileHash(string $relativePath): ?string {
+        return self::$mapCache['hashes'][$relativePath] ?? null;
+    }
+
+    /**
+     * Dynamically instantiate a controller by short name
+     * Example: ClassLoader::createRoute('DashboardController');
+     */
+    public static function createRoute(string $shortName): bool {
+        $routes = self::$mapCache['routes'] ?? [];
+
+        if (!isset($routes[$shortName])) {
+            // Rebuild route map if missing
+            $map = self::buildAutoloadMap(self::$basePath, self::$paths, self::$mapFile);
+            self::$mapCache = $map;
+            $routes = $map['routes'] ?? [];
+
+            if (!isset($routes[$shortName])) {
+                return false; // still not found
+            }
+        }
+
+        $file = $routes[$shortName] ?? null;
+        if ($file && is_file($file)) {
+            require_once $file;
+            return true;
+        }
+
+        return false;
+    }
 }
 
 /*
@@ -142,7 +252,6 @@ class ClassLoader {
  * where to look below  for class files
  * **********************************************
  */
-
 $paths = [
     '/classes/',
     '/classes-get21/',

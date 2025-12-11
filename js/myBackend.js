@@ -145,44 +145,44 @@ function myBackend(v)
         ////////////////
         payload.pfid = pfid;
         callDirect(backend_script, payload, getResponds);
-
         function getResponds(recPkg) {
-            var i, dd, ls, nl;
-            dd = document.getElementById(recPkg.pfid);
-            if (dd === null) {
+            const container = document.getElementById(recPkg.pfid);
+            if (!container)
                 return;
-            }
-            dd.innerHTML = '';
-            dd.innerHTML = recPkg.result;
-            dd.style.display = 'block';
-            ///////////////////
-            // here we look for CSS style sheet via link element
-            ///////////////////
-            ls = dd.getElementsByTagName('LINK');
-            nl = ls.length;
-            for (i = 0; i < nl; i++) {
-                if (ls[i].type === 'text/css' && ls[i].rel === 'stylesheet') {
-                    includeCSS(ls[i].href);
-                }
-            }
-            ///////////////////
-            // here we look for and execte/load any given JavaScript              
-            ///////////////////
-            ls = dd.getElementsByTagName('script');
-            nl = ls.length;
-            GEVAL = eval; //eval in global scope
-            for (i = 0; i < nl; i++) {
-                if (ls[i].src === 'undefined' || ls[i].src === '') {
-                    xxx = GEVAL(ls[i].innerHTML); // executes immediatly in global scope !!!
-                } else {
-                    includeJS(ls[i].src); // this is evaluated later
-                }
-            }
-            if (typeof onDoneFunc !== 'undefined' && typeof onDoneFunc === 'function') {
-                onDoneFunc(recPkg);
-            }
+
+            // Parse the incoming HTML into a detached element first
+            const temp = document.createElement('div');
+            temp.innerHTML = recPkg.result;
+
+            // Collect CSS <link> tags
+            const cssLinks = Array.from(temp.getElementsByTagName('LINK'))
+                    .filter(link => link.type === 'text/css' && link.rel === 'stylesheet');
+
+            // Load CSS before content is displayed
+            cssLinks.forEach(link => includeCSS(link.href));
+
+            // Now clear and insert content
+            container.innerHTML = '';
+            container.append(...temp.childNodes);
+            container.style.display = 'block';
+
+            // Process scripts
+            Array.from(container.getElementsByTagName('SCRIPT'))
+                    .forEach(script => {
+                        if (!script.src) {
+                            if (isTrustedSource(script.innerHTML)) {
+                                executeInGlobalScope(script.innerHTML);
+                            }
+                        } else {
+                            includeJS(script.src);
+                        }
+                    });
+
+            onDoneFunc?.(recPkg);
+            mapFunctions(container, "[data-funame]");
         }
 
+       
         function includeJS(file) {
             var i, heads, script, l = document.getElementsByTagName('SCRIPT');
             for (i = 0; i < l.length; i++) {

@@ -6,7 +6,7 @@
  *
  * @author Heinz
  */
-class isbdElements extends tags2mem {
+class isbdElements extends Tags2MemNew {
 
     function __construct() {
         parent::__construct();
