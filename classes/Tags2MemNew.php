@@ -2,7 +2,7 @@
 
 class Tags2MemNew {
 
-    private  $db;
+    private $db;
     private array $tags = [];
     private array $tagIndex = [];
     private array $consumed = [];
@@ -14,8 +14,8 @@ class Tags2MemNew {
     /**
      * Internal setup: load tags, add synthetic tag, build index, init consumed map
      */
-    function setTags(string $titleId, string $filter = ''): void {
-        
+    function setTags(string $titleId, string $filter = ''): array {
+
         $this->tags = [];
         $this->tagIndex = [];
         $this->consumed = [];
@@ -38,7 +38,7 @@ class Tags2MemNew {
         // Build tag index
         $this->buildTagIndex();
 
-       
+        return $this->tags;
     }
 
     private function addSyntheticA00(string $titleId): void {

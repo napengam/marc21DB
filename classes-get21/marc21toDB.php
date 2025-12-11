@@ -1,6 +1,6 @@
 <?php
 
-class marc21toDB extends marc21 {
+class marc21toDB extends Marc21Reader {
 
     private $insertTags = "insert into tags (titleid,tag,seq,indicator,subfieldcode,subfielddata) values ",
             $insertTitles = "insert into titles (sourceid,offset) values (?,?)",

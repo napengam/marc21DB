@@ -1,7 +1,7 @@
 <?php
 
 // Auto-generated combined autoload map. Do not edit manually.
-// Generated on: 2025-12-11 18:54:15
+// Generated on: 2025-12-11 19:33:46
 
 return array (
   'classes' => 
@@ -16,6 +16,11 @@ return array (
       'file' => 'F:/laragon/www/marc21DB//classes/GetAllConfig.php',
       'mtime' => 1758540267,
     ),
+    'Marc21Reader' => 
+    array (
+      'file' => 'F:/laragon/www/marc21DB//classes-get21/Marc21Reader.php',
+      'mtime' => 1765477471,
+    ),
     'PDODB' => 
     array (
       'file' => 'F:/laragon/www/marc21DB//classes/PDODB.php',
@@ -24,7 +29,7 @@ return array (
     'Tags2MemNew' => 
     array (
       'file' => 'F:/laragon/www/marc21DB//classes/Tags2MemNew.php',
-      'mtime' => 1765475028,
+      'mtime' => 1765478016,
     ),
     'filesFromDB' => 
     array (
@@ -56,15 +61,10 @@ return array (
       'file' => 'F:/laragon/www/marc21DB//classes-get21/m21HooksDB.php',
       'mtime' => 1758539778,
     ),
-    'marc21' => 
-    array (
-      'file' => 'F:/laragon/www/marc21DB//classes-get21/marc21.php',
-      'mtime' => 1715073331,
-    ),
     'marc21toDB' => 
     array (
       'file' => 'F:/laragon/www/marc21DB//classes-get21/marc21toDB.php',
-      'mtime' => 1758539635,
+      'mtime' => 1765476866,
     ),
     'page' => 
     array (
@@ -79,7 +79,7 @@ return array (
     'showAllTags' => 
     array (
       'file' => 'F:/laragon/www/marc21DB//classes-GUI/showAllTags.php',
-      'mtime' => 1758533808,
+      'mtime' => 1765477753,
     ),
     'showBookContent' => 
     array (

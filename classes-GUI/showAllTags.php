@@ -11,7 +11,7 @@ class showAllTags {
         
 
         $titleid = $_GET['titleid'];
-        $ta = new tags2mem();
+        $ta = new Tags2MemNew();
         $tags = $ta->setTags($titleid);
         /*
          * ***********************************************
