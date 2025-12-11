@@ -21,17 +21,14 @@ class showTitles {
 
         $xx = new titleData($this->param);
         if ($this->param->search !== '') {
-            $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";
-            $ttt = $db->prepare($q);
-            $rows = $db->query($ttt, [$this->param->colname, $this->against($this->param->search)]);
+            $q = "select titleid as id from search where colname=? and match(what) against(? in boolean mode) ";        
+            $rows = $db->query($q, [$this->param->colname, $this->against($this->param->search)]);
         } else if ($this->param->ddc !== '') {
-            $q = "select id from titles where sourceid=? and ddc=?";
-            $ttt = $db->prepare($q);
-            $rows = $db->query($ttt, [$this->param->id, $this->param->ddc]);
+            $q = "select id from titles where sourceid=? and ddc=?";          
+            $rows = $db->query($q, [$this->param->id, $this->param->ddc]);
         } else {
-            $q = "select id from titles where sourceid=?";
-            $ttt = $db->prepare($q);
-            $rows = $db->query($ttt, [$this->param->id]);
+            $q = "select id from titles where sourceid=?";          
+            $rows = $db->query($q, [$this->param->id]);
         }
 
         $res = $ids = [];
