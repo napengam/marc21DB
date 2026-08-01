@@ -196,11 +196,7 @@ function marc21DBF() {
         script = 'classes-GUI/showDDC.php';
         payload = {'id': sourceid, 'uuid': uuid};
 
-        if (param !== null && 1 === 2) {  // disable path
-            script = 'classes-GUI/showSearchDDC.php';
-            payload = param;
-        }
-
+       
         backend.callDirect(script, payload, (resPkg) => {
             if (resPkg.error !== '') {
                 dialogs.myInform(resPkg.error);

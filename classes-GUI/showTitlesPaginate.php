@@ -1,9 +1,8 @@
 <?php
 
-
 require '../include/core.inc.php';
 
-class showTitles {
+class showTitlesPaginate {
 
     use httpRequest;
 
@@ -14,7 +13,7 @@ class showTitles {
          * register with websocket for feedback
          * **********************************************
          */
-        $Adress=GetAllConfig::load()['websocketserver']['adress'];
+        $Adress = GetAllConfig::load()['websocketserver']['adress'];
         $talk = new websocketPhp($Adress . '/php');
         $talk->uuid = $this->param->uuid; // client uuid to talk back
 
@@ -28,7 +27,7 @@ class showTitles {
         $res = [];
         $n = count($this->param->cursor['ids']);
         foreach ($this->param->cursor['ids'] as $i => $id) {
-            $out = $xx->makeISBD($id);            
+            $out = $xx->makeISBD($id);
             $res[] = "<div  class = 'box'><div class='content is-family-sans-serif'>$out<br></div></div>";
             if ($i % 200 == 0) {
                 $talk->feedback("Lese $i von" . $n . ' Titel');
@@ -36,7 +35,7 @@ class showTitles {
         }
         $this->param->result = implode('', $res);
         echo $this->closeRequest($this->param);
-    }   
+    }
 }
 
-$xx = new showTitles();
+$xx = new showTitlesPaginate();

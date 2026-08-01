@@ -1,17 +1,45 @@
 <?php
 
+
+
 /**
  * ClassLoader
- * ------------
- * Unified autoloader + router helper.
+ * -----------
+ * Unified autoloader and route helper for a PHP project.
  *
- * Generates one file: /autoload/autoload_map.php
- * Structure:
- *   [
- *     'classes' => [ className => ['file' => ..., 'mtime' => ...] ],
- *     
- *     'routes'  => [ shortClassName => filePath ]
- *   ]
+ * Responsibilities:
+ *   - Scans configured source folders for PHP files.
+ *   - Extracts fully-qualified class/interface/trait names via token parsing.
+ *   - Builds a single autoload map file: /autoload/autoload_map.php
+ *     Structure:
+ *       [
+ *         'classes' => [ FQCN => ['file' => string, 'mtime' => int] ],
+ *         'routes'  => [ shortClassName => filePath ]
+ *       ]
+ *   - Registers an autoloader that:
+ *       * Loads classes based on the generated map.
+ *       * Verifies file modification times and rebuilds the map if entries are outdated.
+ *   - Provides a simple routing helper by mapping "short" class names
+ *     (basename of the FQCN) to files located in /GUI/ or /Api/ directories.
+ *
+ * Project root detection
+ * ----------------------
+ * The project root is determined by walking upwards from the start directory
+ * until we find a directory named 'auatoload' on the highest level
+ *
+ * Requirements:
+ *   - $anchor must exist directly inside the project root, e.g.:
+ *         /project_root/autoload/
+ *   - If no ancestor directory contains $anchor as an immediate child,
+ *     detection fails and an exception is thrown.
+ *
+ * This approach avoids issues with symlinked script paths by relying on
+ * a logical "anchor" artifact inside the project root.
+ *
+ * Usage:
+ *   ClassLoader::load($anchor, $paths);
+ *   - $anchor: name of a file or directory that exists inside the project root.
+ *   - $paths: array of relative source paths to scan (e.g. ['src', 'lib']).
  */
 class ClassLoader {
 
@@ -24,12 +52,22 @@ class ClassLoader {
     /**
      * Initialize the autoloader.
      */
-    public static function load(string $projectFolder, array $paths): void {
-        $baseDir = dirname(__DIR__);
-        $basePath = self::findBasePath($baseDir, $projectFolder);
+    public static function load(array $paths): void {
+        if (!empty(self::$mapCache)) {
+            return; // already initialized (cache)
+        }
+
+        // robust start dir (CLI + web)
+        $start = $_SERVER['SCRIPT_FILENAME'] ?? getcwd();
+        $startDir = is_file($start) ? dirname($start) : $start;
+
+        // symlink-safe
+        $startDir = realpath($startDir) ?: $startDir;
+
+        $basePath = self::findProjectFolder($startDir, 'autoload');
 
         if (!$basePath) {
-            throw new Exception("Base path containing '{$projectFolder}' not found.");
+            throw new Exception("Base path containing 'autolad' not found.");
         }
 
         $autoloadDir = $basePath . '/autoload';
@@ -37,41 +75,34 @@ class ClassLoader {
 
         self::$basePath = $basePath;
         self::$paths = $paths;
-        self::$mapFile = $basePath . '/autoload/autoload_map.php';
+        self::$mapFile = $mapFile;
 
         if (!is_dir($autoloadDir)) {
             mkdir($autoloadDir, 0775, true);
         }
 
-        // Load or build unified map
+        // load or build map
         $map = is_file($mapFile) ? require $mapFile : self::buildAutoloadMap($basePath, $paths, $mapFile);
 
         self::$mapCache = $map;
         $classMap = $map['classes'];
 
-        // Register PSR-like autoloader
-        spl_autoload_register(function ($class) use (&$classMap, $basePath, $paths, $mapFile) {
+        spl_autoload_register(function ($class) use ($classMap, $basePath) {
             $entry = $classMap[$class] ?? null;
 
-            if ($entry && is_file($entry['file'])) {
-                if (filemtime($entry['file']) === $entry['mtime']) {
-                    require_once $entry['file'];
-                    return;
-                }
-            }
-
-            // Rebuild map if missing/outdated
-            $map = self::buildAutoloadMap($basePath, $paths, $mapFile);
-            self::$mapCache = $map;
-            $classMap = $map['classes'];
-
-            $entry = $classMap[$class] ?? null;
-            if ($entry && is_file($entry['file'])) {
-                require_once $entry['file'];
+            $full = $basePath . '/' . $entry;
+            if ($entry && is_file($full)) {
+                require_once $full;
                 return;
             }
 
-            throw new Exception("Class '{$class}' not found or outdated.");
+            $short = basename(str_replace('\\', '/', $class));
+            $entry = $classMap[$short] ?? null;
+            if ($entry && is_file($entry)) {
+                require_once $entry;
+                return;
+            }
+            return;
         });
     }
 
@@ -81,45 +112,89 @@ class ClassLoader {
     private static function buildAutoloadMap(string $basePath, array $paths, string $mapFile): array {
         $classes = [];
         $routes = [];
-
-        foreach ($paths as $path) {
+        $cpaths = $paths;
+        $guiRoutes = [];
+        if (self::isMultiDimensional($paths)) {
+            $cpaths = $paths['classes'];
+            $guiRoutes = $paths['routes'];
+        }
+        $seenFiles = []; // ✅ prevent duplicate processing
+        $shortIndex = []; // ✅ track short-name conflicts
+        foreach ($cpaths as $path) {
+            $fullPath = realpath("$basePath/$path");
+            if (!$fullPath || !is_dir($fullPath)) {
+                throw new Exception("Invalid path: {$path}");
+            }
             $rii = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator("$basePath/$path", FilesystemIterator::SKIP_DOTS)
+                    new RecursiveDirectoryIterator($fullPath, FilesystemIterator::SKIP_DOTS)
             );
-
             foreach ($rii as $file) {
                 if (!$file->isFile() || $file->getExtension() !== 'php') {
                     continue;
                 }
-
-                $filePath = str_replace('\\', '/', $file->getPathname());
-                $defs = self::extractDefinitions($filePath);
-
+                $realPath = $file->getRealPath();
+                $normalizedBase = rtrim(str_replace('\\', '/', realpath($basePath)), '/');
+                $normalizedFile = str_replace('\\', '/', $realPath);
+                // make relative
+                $filePath = ltrim(str_replace($normalizedBase, '', $normalizedFile), '/');
+                // skip duplicate files (symlinks etc.)
+                if (isset($seenFiles[$realPath])) {
+                    continue;
+                }
+                $seenFiles[$realPath] = true;
+                $defs = self::extractDefinitions($realPath);
                 foreach ($defs as $def) {
-                    $classes[$def] = [
-                        'file' => $filePath,
-                        'mtime' => filemtime($filePath),
-                    ];
-
-                    // Router: store naked class name as key
+                    // HARD FAIL on duplicate FQCN
+                    if (isset($classes[$def])) {
+                        throw new Exception(
+                                        "Duplicate class '{$def}' found in:\n" .
+                                        "- {$classes[$def]}\n" .
+                                        "- {$filePath}"
+                                );
+                    }
+                    $classes[$def] = $filePath;
+                    // short name handling (safe)
                     $short = basename(str_replace('\\', '/', $def));
-                    if (strpos($filePath, '/GUI/') !== false || strpos($filePath, '/Api/') !== false) {
-                        $routes[$short] = $filePath;
+                    if (!isset($shortIndex[$short])) {
+                        $shortIndex[$short] = $def;
+                    } else {
+                        // conflict → remove both from short mapping
+                        unset($routes[$short]);
+                        $shortIndex[$short] = false;
+                    }
+                    // router mapping (only if not conflicted)
+                    if ($shortIndex[$short] !== false) {
+                        $found = array_filter($guiRoutes, function ($p) use ($filePath) {
+                            return strpos($filePath, $p) !== false;
+                        });
+                        if ($found) {
+                            $routes[$short] = $filePath;
+                        }
                     }
                 }
             }
         }
-
+        //  sanity check
+        if (empty($classes)) {
+            throw new Exception("Autoload map is empty — no classes found.");
+        }
         ksort($classes);
         ksort($routes);
-
         $data = [
             'classes' => $classes,
             'routes' => $routes,
         ];
-
         self::writeMapFile($mapFile, $data);
         return $data;
+    }
+
+    private static function isMultiDimensional(array $array): bool {
+        foreach ($array as $value) {
+            if (is_array($value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -132,40 +207,56 @@ class ClassLoader {
 
         $contents = file_get_contents($file);
         $tokens = token_get_all($contents);
+
         $defs = [];
         $namespace = '';
 
-        for ($i = 0; $i < count($tokens); $i++) {
+        $count = count($tokens);
+
+        for ($i = 0; $i < $count; $i++) {
+
             if (!is_array($tokens[$i])) {
                 continue;
             }
 
-            // Capture namespace
+            // -------------------------
+            // NAMESPACE
+            // -------------------------
             if ($tokens[$i][0] === T_NAMESPACE) {
                 $namespace = '';
-                for ($j = $i + 1; $j < count($tokens); $j++) {
-                    if (is_array($tokens[$j]) &&
-                            ($tokens[$j][0] === T_STRING || $tokens[$j][0] === T_NAME_QUALIFIED)) {
-                        $namespace .= $tokens[$j][1];
-                    } elseif ($tokens[$j] === ';' || $tokens[$j] === '{') {
-                        break;
-                    }
+                $i++;
+
+                while (isset($tokens[$i]) && is_array($tokens[$i]) &&
+                in_array($tokens[$i][0], [T_STRING, T_NS_SEPARATOR, T_NAME_QUALIFIED], true)
+                ) {
+                    $namespace .= $tokens[$i][1];
+                    $i++;
                 }
             }
 
-            // Capture class/interface/trait
-            if (in_array($tokens[$i][0], [T_CLASS, T_INTERFACE, T_TRAIT], true)) {
+            // -------------------------
+            // CLASS / INTERFACE / TRAIT / ENUM
+            // -------------------------
+            if (in_array($tokens[$i][0], [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], true)) {
+
+                // skip anonymous class
                 $prev = $tokens[$i - 1] ?? null;
                 if ($tokens[$i][0] === T_CLASS && is_array($prev) && $prev[0] === T_NEW) {
-                    continue; // Skip anonymous
+                    continue;
                 }
 
-                for ($j = $i + 1; $j < count($tokens); $j++) {
-                    if (is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
-                        $name = $tokens[$j][1];
-                        $defs[] = ($namespace ? $namespace . '\\' : '') . $name;
-                        break;
-                    }
+                $i++;
+
+                // skip whitespace
+                while (isset($tokens[$i]) && is_array($tokens[$i]) &&
+                $tokens[$i][0] === T_WHITESPACE) {
+                    $i++;
+                }
+
+                if (isset($tokens[$i]) && is_array($tokens[$i]) && $tokens[$i][0] === T_STRING) {
+                    $name = $tokens[$i][1];
+
+                    $defs[] = $namespace ? $namespace . '\\' . $name : $name;
                 }
             }
         }
@@ -177,30 +268,57 @@ class ClassLoader {
      * Writes the unified autoload map file.
      */
     private static function writeMapFile(string $file, array $data): void {
-        file_put_contents(
-                $file,
-                "<?php\n\n" .
+        $tmpFile = $file . '.tmp';
+
+        $content = "<?php\n\n" .
                 "// Auto-generated combined autoload map. Do not edit manually.\n" .
                 "// Generated on: " . date('Y-m-d H:i:s') . "\n\n" .
-                "return " . var_export($data, true) . ";\n"
-        );
-    }
+                "return " . var_export($data, true) . ";\n";
 
-    /**
-     * Finds the base project directory by folder name.
-     */
-    private static function findBasePath(string $startPath, string $targetFolder): ?string {
-        $parts = explode(DIRECTORY_SEPARATOR, $startPath);
-        $path = [];
-
-        foreach ($parts as $part) {
-            $path[] = $part;
-            if ($part === $targetFolder) {
-                return implode(DIRECTORY_SEPARATOR, $path);
-            }
+        // ensure directory exists
+        $dir = dirname($file);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
         }
 
-        return null;
+        // write complete file first
+        file_put_contents($tmpFile, $content, LOCK_EX);
+
+        // atomic swap
+        rename($tmpFile, $file);
+    }
+
+    /*
+     * ***********************************************
+     * $anchor must be a file or directory just one 
+     * below project directory 
+     * **********************************************
+     */
+
+    private static function findProjectFolder(string $startDir, string $anchor): string {
+        $dir = $startDir;
+        $found = null;
+
+        while ($dir !== dirname($dir)) {
+
+            // resolve real path (symlink-safe)
+            $realDir = realpath($dir) ?: $dir;
+
+            $path = $realDir . DIRECTORY_SEPARATOR . $anchor;
+
+            if (file_exists($path)) {
+                // keep updating → highest wins
+                $found = $realDir;
+            }
+
+            $dir = dirname($dir);
+        }
+
+        if ($found !== null) {
+            return $found;
+        }
+
+        throw new Exception("Project root containing '{$anchor}' not found.");
     }
 
     // -------------------------------
@@ -227,7 +345,7 @@ class ClassLoader {
         $routes = self::$mapCache['routes'] ?? [];
 
         if (!isset($routes[$shortName])) {
-            // Rebuild route map if missing
+            // ?Rebuild route map if missing
             $map = self::buildAutoloadMap(self::$basePath, self::$paths, self::$mapFile);
             self::$mapCache = $map;
             $routes = $map['routes'] ?? [];
@@ -260,5 +378,5 @@ $paths = [
 ];
 
 define('PROJECT_DIR', 'marc21DB');
-ClassLoader::load('marc21DB', $paths);
+ClassLoader::load($paths);
 ErrorHandler::register();
