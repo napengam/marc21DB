@@ -3,7 +3,7 @@
 class marc21toDB extends Marc21Reader {
 
     private $insertTags = "insert into tags (titleid,tag,seq,indicator,subfieldcode,subfielddata) values ",
-            $insertTitles = "insert into titles (sourceid,offset) values (?,?)",
+            $insertTitles = "insert into titles (sourceid,`offset`) values (?,?)",
             $insertSources = "insert into sources (path,file) values (?,?) ON DUPLICATE KEY UPDATE file=file",
             $block = true, $db, $insT, $insS, $sourceid,
             $allTags = null;

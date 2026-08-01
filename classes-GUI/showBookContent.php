@@ -45,7 +45,7 @@ class showBookContent {
             CURLOPT_SSL_VERIFYHOST => false, // disable hostname check
             CURLOPT_USERAGENT => "Mozilla/5.0",
             CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => 30
         ]);
 
         $data = curl_exec($ch);

@@ -259,7 +259,6 @@ $paths = [
     '/classes-Hooks/'
 ];
 
-
 define('PROJECT_DIR', 'marc21DB');
 ClassLoader::load('marc21DB', $paths);
-
+ErrorHandler::register();
